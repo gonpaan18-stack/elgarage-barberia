@@ -401,7 +401,14 @@ async function buildTimes(){
   let h=desdeH, m=0;
   while(h<hastaH){ slots.push(`${h}:${m.toString().padStart(2,'0')}`); m+=intervalo; while(m>=60){m-=60;h++;} }
 
-  slots.forEach(t=>{
+  // Filtrar horarios pasados (solo para el día de hoy, zona Argentina UTC-3)
+  const ahoraAR = new Date(new Date().toLocaleString('en-US', {timeZone:'America/Argentina/Buenos_Aires'}));
+  const esHoy = state.date === fechaLocal(new Date());
+  const slotsFiltrados = esHoy
+    ? slots.filter(t => { const [sh,sm]=t.split(':').map(Number); return sh*60+sm > ahoraAR.getHours()*60+ahoraAR.getMinutes() })
+    : slots;
+
+  slotsFiltrados.forEach(t=>{
     const el=document.createElement('div');
     const taken=!!(ocupados[t]&&ocupados[t].nombre);
     el.className='time-slot'+(taken?' taken':'');
