@@ -83,7 +83,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'reservar.html'))
 })
 
-app.get('/admin*', (req, res) => {
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+})
+
+app.get('/admin/*path', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
 
