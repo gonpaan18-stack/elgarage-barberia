@@ -3,6 +3,7 @@
 @import "tailwindcss";
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body, #root { margin: 0; padding: 0; min-height: 100dvh; background: #0E0F11; font-family: Barlow, sans-serif; -webkit-font-smoothing: antialiased; }
+html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0E0F11; font-family: Barlow, sans-serif; -webkit-font-smoothing: antialiased; touch-action: pan-x pan-y; }
+#root { height: 100dvh; overflow: hidden; }
 ::-webkit-scrollbar { display: none; }
 .font-bebas { font-family: 'Bebas Neue', sans-serif; }
