@@ -30,9 +30,8 @@ async function initDB() {
 await initDB()
 
 app.use(express.json())
-app.use(express.static(path.join(__dirname, 'dist')))
 
-// ─── SSE: clientes conectados ───
+// ─── SSE ───
 const clients = new Set()
 
 function broadcast(clave) {
@@ -46,7 +45,6 @@ app.get('/api/eventos', (req, res) => {
   res.setHeader('Connection', 'keep-alive')
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.flushHeaders()
-  // Heartbeat cada 25s para mantener la conexión
   const hb = setInterval(() => { try { res.write(': ping\n\n') } catch {} }, 25000)
   clients.add(res)
   req.on('close', () => { clients.delete(res); clearInterval(hb) })
@@ -78,7 +76,7 @@ app.put('/api/datos/:clave', async (req, res) => {
   }
 })
 
-// ─── Rutas: / → reservar.html (clientes), /admin → index.html (panel dueño) ───
+// ─── Rutas HTML (ANTES del static para que / no sea interceptada) ───
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'reservar.html'))
 })
@@ -91,6 +89,10 @@ app.get('/admin/*path', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
 
+// ─── Assets estáticos (JS, CSS, imágenes) ───
+app.use(express.static(path.join(__dirname, 'dist')))
+
+// ─── Cualquier otra ruta → página del cliente ───
 app.get('/*path', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'reservar.html'))
 })
