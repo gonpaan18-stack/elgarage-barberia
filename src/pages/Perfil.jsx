@@ -12,7 +12,7 @@ const INITIAL = {
   precios: { corte: '14.000', promo: '26.000', nino: '12.000', barba: '6.000' }
 }
 
-export default function Perfil() {
+export default function Perfil({ onLogout }) {
   const [data, setLocalData] = useState(INITIAL)
   const [guardado, setGuardado] = useState(false)
   const [cargando, setCargando] = useState(true)
@@ -82,7 +82,7 @@ export default function Perfil() {
       <button onClick={guardar} className="w-full bg-[#CE2434] text-white text-[14px] font-bold py-4 rounded-2xl cursor-pointer border-0">
         Guardar cambios
       </button>
-      <button className="w-full bg-[#16181C] border border-white/10 text-[#8c8c89] text-[13px] font-semibold py-3.5 rounded-2xl cursor-pointer">
+      <button onClick={onLogout} className="w-full bg-[#16181C] border border-white/10 text-[#8c8c89] text-[13px] font-semibold py-3.5 rounded-2xl cursor-pointer">
         Cerrar sesión
       </button>
     </div>
