@@ -330,10 +330,28 @@ async function apiPut(clave,val){ await fetch(`/api/datos/${encodeURIComponent(c
 async function init(){
   const p = await apiGet('perfil');
   if(p) perfilCache = p;
+  actualizarPrecios();
   buildDays();
   buildTimes();
 }
 init();
+
+// ─── Actualizar precios en las cards desde el perfil ───
+function actualizarPrecios(){
+  const pr = (perfilCache.precios)||{};
+  const fmt = v => v ? `$${Number(String(v).replace(/\./g,'')).toLocaleString('es-AR')}` : null;
+  const MAP = { 'Corte': pr.corte, 'Promo padre/hijo': pr.promo, 'Corte niño': pr.nino, 'Barba': pr.barba };
+  const MAP_NUM = { 'Corte': pr.corte||14000, 'Promo padre/hijo': pr.promo||26000, 'Corte niño': pr.nino||12000, 'Barba': pr.barba||6000 };
+  document.querySelectorAll('.service-card').forEach(card => {
+    const svc = card.dataset.service;
+    const rawNum = String(MAP_NUM[svc]||'').replace(/\./g,'');
+    const num = parseInt(rawNum)||0;
+    card.dataset.price = num;
+    const priceEl = card.querySelector('.svc-price');
+    const fmtVal = fmt(MAP[svc]);
+    if(priceEl && fmtVal) priceEl.textContent = fmtVal;
+  });
+}
 
 // ─── Generate days (next 7 days, skip Sunday) ───
 function buildDays(){

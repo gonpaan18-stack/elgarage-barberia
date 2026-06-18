@@ -68,10 +68,10 @@ export default function Perfil({ onLogout }) {
       </Section>
 
       <Section title="Servicios y precios">
-        <EditRow label="Corte"            value={`$${data.precios.corte}`}  onSave={v => setPrecio('corte',  v.replace(/\$/g,'').trim())}/>
-        <EditRow label="Promo padre/hijo" value={`$${data.precios.promo}`} onSave={v => setPrecio('promo',  v.replace(/\$/g,'').trim())}/>
-        <EditRow label="Corte niño"       value={`$${data.precios.nino}`}   onSave={v => setPrecio('nino',   v.replace(/\$/g,'').trim())}/>
-        <EditRow label="Barba"            value={`$${data.precios.barba}`}  onSave={v => setPrecio('barba',  v.replace(/\$/g,'').trim())}/>
+        <EditRow label="Corte"            value={`$${Number(data.precios.corte).toLocaleString('es-AR')}`}  onSave={v => setPrecio('corte',  v.replace(/[\$\.]/g,'').trim())}/>
+        <EditRow label="Promo padre/hijo" value={`$${Number(data.precios.promo).toLocaleString('es-AR')}`} onSave={v => setPrecio('promo',  v.replace(/[\$\.]/g,'').trim())}/>
+        <EditRow label="Corte niño"       value={`$${Number(data.precios.nino).toLocaleString('es-AR')}`}   onSave={v => setPrecio('nino',   v.replace(/[\$\.]/g,'').trim())}/>
+        <EditRow label="Barba"            value={`$${Number(data.precios.barba).toLocaleString('es-AR')}`}  onSave={v => setPrecio('barba',  v.replace(/[\$\.]/g,'').trim())}/>
       </Section>
 
       <Section title="App">
