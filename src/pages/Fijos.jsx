@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { getData, setData, useSync } from '../api'
-import { CLIENTES_FIJOS } from '../data/mock'
 
 const COLORES = ['#CE2434','#21458F','#3a3d44','#2a6b4a','#7a3d8f']
 const SERVICIOS = ['Corte','Corte + barba','Corte niño','Barba','Promo padre/hijo']
@@ -20,7 +19,7 @@ export default function Fijos() {
 
   async function cargar() {
     const data = await getData('fijos')
-    setClientes(data || CLIENTES_FIJOS)
+    setClientes(data || [])
     setCargando(false)
   }
 

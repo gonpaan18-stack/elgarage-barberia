@@ -3,8 +3,8 @@ import { getData, setData } from '../api'
 
 const INITIAL = {
   nombre: 'El Garage',
-  direccion: 'R. de Escalada, Lanús',
-  telefono: '+54 9 11 0000-0000',
+  direccion: 'Hernandarias 951, Lanús',
+  telefono: '+54 9 11 7059-4769',
   horarioSemana: '10:00 – 20:00',
   horarioSabado: '09:00 – 19:00',
   intervalo: '20 min',
