@@ -13,7 +13,7 @@ function semanaActual() {
   })
 }
 
-export default function Dashboard() {
+export default function Dashboard({ onClose }) {
   const [stats, setStats] = useState(null)
   const [cargando, setCargando] = useState(true)
 
@@ -56,7 +56,12 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-y-auto px-5 pt-3 pb-6 gap-5">
-      <p className="font-bebas text-[28px] tracking-wide text-[#F3F0E9] leading-none m-0">Dashboard</p>
+      <div className="flex items-center justify-between">
+        <p className="font-bebas text-[28px] tracking-wide text-[#F3F0E9] leading-none m-0">Dashboard</p>
+        <button onClick={onClose} className="w-8 h-8 rounded-full bg-[#16181C] border border-white/10 flex items-center justify-center cursor-pointer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c8c89" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
 
       {/* Hoy */}
       <div>

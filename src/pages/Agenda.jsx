@@ -32,7 +32,7 @@ const SERVICIOS = [
   { nombre: 'Barba', precio: 6000 },
 ]
 
-export default function Agenda({ fabModal, onCloseFab }) {
+export default function Agenda({ fabModal, onCloseFab, onDashboard }) {
   const hoy = new Date()
   const diaSemana = hoy.getDay()
   const hoyKey = turnosKey(fechaLocal(hoy))
@@ -113,6 +113,9 @@ export default function Agenda({ fabModal, onCloseFab }) {
               <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
               <path d="M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5"/>
             </svg>
+          </button>
+          <button onClick={onDashboard} className="w-8 h-8 rounded-full bg-[#16181C] border border-white/10 flex items-center justify-center cursor-pointer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c8c89" strokeWidth="1.9"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
           </button>
           <img src="/logo.png" alt="El Garage" className="w-10 h-10 rounded-full object-cover" />
         </div>

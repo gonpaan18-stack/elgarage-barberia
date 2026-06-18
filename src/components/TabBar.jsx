@@ -20,8 +20,8 @@ export default function TabBar({ tab, setTab, onAdd }) {
 
       {/* 2 tabs derecha */}
       <div className="flex flex-1 justify-around pb-2 pt-2.5">
-        <TabBtn icon="fijos"      label="Fijos"      active={tab==='fijos'}      onClick={()=>setTab('fijos')} />
-        <TabBtn icon="dashboard"  label="Dashboard"  active={tab==='dashboard'}  onClick={()=>setTab('dashboard')} />
+        <TabBtn icon="fijos"  label="Fijos"  active={tab==='fijos'}  onClick={()=>setTab('fijos')} />
+        <TabBtn icon="perfil" label="Perfil" active={tab==='perfil'} onClick={()=>setTab('perfil')} />
       </div>
     </div>
   )
@@ -43,7 +43,7 @@ function Icon({ name, color }) {
     case 'agenda':    return <svg {...s}><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
     case 'semana':    return <svg {...s}><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
     case 'fijos':     return <svg {...s}><path d="M17 2l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-    case 'dashboard': return <svg {...s}><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+    case 'perfil':    return <svg {...s}><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
     default: return null
   }
 }
