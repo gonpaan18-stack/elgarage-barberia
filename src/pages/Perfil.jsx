@@ -68,10 +68,10 @@ export default function Perfil({ onLogout }) {
       </Section>
 
       <Section title="Servicios y precios">
-        <EditRow label="Corte"            value={`$${Number(String(data.precios.corte).replace(/\./g,'')).toLocaleString('es-AR')}`}  onSave={v => setPrecio('corte',  v.replace(/[\$\.]/g,'').trim())}/>
-        <EditRow label="Promo padre/hijo" value={`$${Number(String(data.precios.promo).replace(/\./g,'')).toLocaleString('es-AR')}`} onSave={v => setPrecio('promo',  v.replace(/[\$\.]/g,'').trim())}/>
-        <EditRow label="Corte niño"       value={`$${Number(String(data.precios.nino).replace(/\./g,'')).toLocaleString('es-AR')}`}   onSave={v => setPrecio('nino',   v.replace(/[\$\.]/g,'').trim())}/>
-        <EditRow label="Barba"            value={`$${Number(String(data.precios.barba).replace(/\./g,'')).toLocaleString('es-AR')}`}  onSave={v => setPrecio('barba',  v.replace(/[\$\.]/g,'').trim())}/>
+        <EditRow precio label="Corte"            value={`$${Number(String(data.precios.corte).replace(/\./g,'')).toLocaleString('es-AR')}`}  onSave={v => setPrecio('corte',  v.replace(/[\$\.]/g,'').trim())}/>
+        <EditRow precio label="Promo padre/hijo" value={`$${Number(String(data.precios.promo).replace(/\./g,'')).toLocaleString('es-AR')}`} onSave={v => setPrecio('promo',  v.replace(/[\$\.]/g,'').trim())}/>
+        <EditRow precio label="Corte niño"       value={`$${Number(String(data.precios.nino).replace(/\./g,'')).toLocaleString('es-AR')}`}   onSave={v => setPrecio('nino',   v.replace(/[\$\.]/g,'').trim())}/>
+        <EditRow precio label="Barba"            value={`$${Number(String(data.precios.barba).replace(/\./g,'')).toLocaleString('es-AR')}`}  onSave={v => setPrecio('barba',  v.replace(/[\$\.]/g,'').trim())}/>
       </Section>
 
       <Section title="App">
@@ -98,11 +98,22 @@ function Section({ title, children }) {
   )
 }
 
-function EditRow({ label, value, onSave, type = 'text', placeholder, link }) {
+function EditRow({ label, value, onSave, type = 'text', placeholder, link, precio }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
 
   if (!editing && draft !== value) setDraft(value)
+
+  function handleChange(e) {
+    if (precio) {
+      const raw = e.target.value.replace(/\D/g, '')
+      setDraft(raw ? Number(raw).toLocaleString('es-AR') : '')
+    } else {
+      setDraft(e.target.value)
+    }
+  }
+
+  function confirmar() { onSave(draft); setEditing(false) }
 
   return (
     <div className="flex items-center px-4 py-3 border-b border-white/[0.06] last:border-0 gap-2">
@@ -110,11 +121,11 @@ function EditRow({ label, value, onSave, type = 'text', placeholder, link }) {
       {editing ? (
         <div className="flex-1 flex items-center gap-2">
           <input autoFocus type={type} value={draft} placeholder={placeholder}
-            onChange={e => setDraft(e.target.value)}
-            onKeyDown={e => { if(e.key==='Enter'){onSave(draft);setEditing(false)} if(e.key==='Escape'){setDraft(value);setEditing(false)} }}
+            onChange={handleChange}
+            onKeyDown={e => { if(e.key==='Enter') confirmar(); if(e.key==='Escape'){setDraft(value);setEditing(false)} }}
             className="flex-1 bg-[#0E0F11] border border-[#CE2434] rounded-lg px-2 py-1 text-[13px] text-[#F3F0E9] outline-none font-semibold min-w-0"
             style={{fontFamily:'Barlow,sans-serif'}}/>
-          <button onClick={() => { onSave(draft); setEditing(false) }} className="text-[#CE2434] text-[12px] font-bold bg-transparent border-0 cursor-pointer flex-none">OK</button>
+          <button onClick={confirmar} className="text-[#CE2434] text-[12px] font-bold bg-transparent border-0 cursor-pointer flex-none">OK</button>
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-between cursor-pointer group" onClick={() => { setDraft(value); setEditing(true) }}>
