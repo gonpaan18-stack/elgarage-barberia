@@ -14,14 +14,18 @@ const pool = new pg.Pool({
 })
 
 async function initDB() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS datos (
-      clave TEXT PRIMARY KEY,
-      valor TEXT NOT NULL,
-      updated_at TIMESTAMP DEFAULT NOW()
-    )
-  `)
-  console.log('Base de datos lista')
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS datos (
+        clave TEXT PRIMARY KEY,
+        valor TEXT NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `)
+    console.log('Base de datos lista')
+  } catch (e) {
+    console.error('Error iniciando DB:', e.message)
+  }
 }
 await initDB()
 
@@ -74,12 +78,17 @@ app.put('/api/datos/:clave', async (req, res) => {
   }
 })
 
-// ─── Servir SPA y reservar.html ───
-app.get('*', (req, res) => {
-  if (req.path === '/reservar' || req.path === '/reservar.html') {
-    return res.sendFile(path.join(__dirname, 'dist', 'reservar.html'))
-  }
+// ─── Rutas: / → reservar.html (clientes), /admin → index.html (panel dueño) ───
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'reservar.html'))
+})
+
+app.get('/admin*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+})
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'reservar.html'))
 })
 
 app.listen(PORT, () => console.log(`El Garage corriendo en puerto ${PORT}`))
