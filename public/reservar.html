@@ -57,9 +57,10 @@
   .day-pill .day-num{font-family:'Bebas Neue',sans-serif;font-size:23px;color:#cfcfca;line-height:1.1}
   .day-pill.selected .day-num{color:#fff}
 
-  /* Times grid */
-  .times-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px}
-  .time-slot{padding:10px 0;border-radius:11px;text-align:center;font-weight:600;font-size:13px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#cfcfca;cursor:pointer;transition:background .18s,border-color .18s}
+  /* Times scroll */
+  .times-grid{display:flex;flex-direction:row;gap:8px;padding:0 20px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .times-grid::-webkit-scrollbar{display:none}
+  .time-slot{flex:none;padding:10px 16px;border-radius:11px;text-align:center;font-weight:600;font-size:13px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#cfcfca;cursor:pointer;transition:background .18s,border-color .18s;white-space:nowrap}
   .time-slot.selected{background:#CE2434;border-color:#CE2434;color:#fff;font-weight:700}
   .time-slot.taken{background:transparent;border:1px dashed rgba(255,255,255,.14);color:#5b5d62;text-decoration:line-through;cursor:default}
 
