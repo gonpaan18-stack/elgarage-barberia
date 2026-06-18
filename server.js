@@ -82,11 +82,11 @@ app.get('/', (req, res) => {
 })
 
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+  res.sendFile(path.join(__dirname, 'dist', 'admin.html'))
 })
 
 app.get('/admin/*path', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+  res.sendFile(path.join(__dirname, 'dist', 'admin.html'))
 })
 
 // ─── Assets estáticos (JS, CSS, imágenes) ───

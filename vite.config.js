@@ -4,6 +4,17 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        admin: 'admin.html',
+      },
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+      },
+    },
+    outDir: 'dist',
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:3000',
