@@ -32,30 +32,47 @@ const SERVICIOS = [
   { nombre: 'Barba', precio: 6000 },
 ]
 
+function getLunes(base) {
+  const d = new Date(base)
+  const dow = d.getDay()
+  const diff = dow === 0 ? -6 : 1 - dow
+  d.setDate(d.getDate() + diff)
+  d.setHours(0,0,0,0)
+  return d
+}
+
 export default function Agenda({ fabModal, onCloseFab, onDashboard }) {
   const hoy = new Date()
-  const diaSemana = hoy.getDay()
-  const hoyKey = turnosKey(fechaLocal(hoy))
+  const hoyStr = fechaLocal(hoy)
 
+  const [fechaSel, setFechaSel] = useState(hoyStr)
+  const [lunesSemana, setLunesSemana] = useState(() => getLunes(hoy))
   const [perfil, setPerfil] = useState(PERFIL_DEFAULT)
   const [turnosDB, setTurnosDB] = useState({})
   const [modal, setModal] = useState(null)
   const [cargando, setCargando] = useState(true)
 
+  const fechaObj = new Date(fechaSel + 'T00:00:00')
+  const diaSemana = fechaObj.getDay()
+  const dataKey = turnosKey(fechaSel)
+
   const slots = useMemo(() => generarSlots(perfil, diaSemana), [perfil, diaSemana])
 
-  async function cargarDatos() {
-    const [p, t] = await Promise.all([getData('perfil'), getData(hoyKey)])
+  async function cargarDatos(key) {
+    const k = key || dataKey
+    const [p, t] = await Promise.all([getData('perfil'), getData(k)])
     if (p) setPerfil({ ...PERFIL_DEFAULT, ...p })
     setTurnosDB(t || {})
     setCargando(false)
   }
 
-  useEffect(() => { cargarDatos() }, [])
+  useEffect(() => {
+    setCargando(true)
+    cargarDatos(dataKey)
+  }, [fechaSel])
 
-  // SSE: actualizar cuando otro dispositivo cambia datos
   useSync((clave) => {
-    if (clave === hoyKey || clave === 'perfil') cargarDatos()
+    if (clave === dataKey || clave === 'perfil') cargarDatos(dataKey)
   })
 
   const turnos = useMemo(() => {
@@ -66,7 +83,7 @@ export default function Agenda({ fabModal, onCloseFab, onDashboard }) {
 
   async function actualizarTurnos(next) {
     setTurnosDB(next)
-    await setData(hoyKey, next)
+    await setData(dataKey, next)
   }
 
   async function marcarHecho(hora) {
@@ -91,14 +108,22 @@ export default function Agenda({ fabModal, onCloseFab, onDashboard }) {
 
   const diasNombre = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado']
   const mesesNombre = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
+  const diasCortos = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
 
-  if (diaSemana === 0) return (
-    <div className="flex flex-col items-center justify-center flex-1 gap-3 px-8 text-center">
-      <span className="text-5xl">🔒</span>
-      <p className="font-bebas text-[28px] text-[#F3F0E9] m-0">Hoy es domingo</p>
-      <p className="text-[13px] text-[#8c8c89] m-0">El local está cerrado.</p>
-    </div>
-  )
+  // Genera los 6 días (lun-sab) de la semana visible
+  const diasSemana = Array.from({length: 6}, (_, i) => {
+    const d = new Date(lunesSemana)
+    d.setDate(d.getDate() + i)
+    return d
+  })
+
+  function cambiarSemana(delta) {
+    const nueva = new Date(lunesSemana)
+    nueva.setDate(nueva.getDate() + delta * 7)
+    setLunesSemana(nueva)
+  }
+
+  const esHoy = fechaSel === hoyStr
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -108,7 +133,7 @@ export default function Agenda({ fabModal, onCloseFab, onDashboard }) {
           <p className="font-bebas text-[26px] tracking-wide text-[#F3F0E9] leading-none m-0">Erik Fenanti</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={cargarDatos} className="w-8 h-8 rounded-full bg-[#16181C] border border-white/10 flex items-center justify-center cursor-pointer">
+          <button onClick={() => cargarDatos(dataKey)} className="w-8 h-8 rounded-full bg-[#16181C] border border-white/10 flex items-center justify-center cursor-pointer">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c8c89" strokeWidth="2.2">
               <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
               <path d="M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5"/>
@@ -121,21 +146,65 @@ export default function Agenda({ fabModal, onCloseFab, onDashboard }) {
         </div>
       </div>
 
+      {/* Selector de semana */}
+      <div className="px-4 pb-2 flex-none">
+        <div className="flex items-center gap-1 mb-2">
+          <button onClick={() => cambiarSemana(-1)} className="w-7 h-7 rounded-lg bg-[#16181C] border border-white/10 flex items-center justify-center cursor-pointer flex-none">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#cfcfca" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div className="flex-1 flex gap-1 justify-between">
+            {diasSemana.map((d) => {
+              const fStr = fechaLocal(d)
+              const sel = fStr === fechaSel
+              const esHoyDia = fStr === hoyStr
+              const esFuturo = fStr > hoyStr
+              return (
+                <button key={fStr} onClick={() => setFechaSel(fStr)}
+                  className="flex-1 flex flex-col items-center py-1.5 rounded-xl cursor-pointer border-0 transition-colors"
+                  style={{
+                    background: sel ? '#CE2434' : esHoyDia ? 'rgba(206,36,52,.12)' : '#16181C',
+                    opacity: esFuturo ? 0.45 : 1,
+                  }}>
+                  <span className="text-[9px] font-bold" style={{color: sel ? '#fff' : esHoyDia ? '#CE2434' : '#6b6e74'}}>
+                    {diasCortos[d.getDay()]}
+                  </span>
+                  <span className="text-[15px] font-bold leading-tight" style={{color: sel ? '#fff' : esHoyDia ? '#CE2434' : '#cfcfca'}}>
+                    {d.getDate()}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          <button onClick={() => cambiarSemana(1)} disabled={fechaLocal(diasSemana[5]) >= hoyStr}
+            className="w-7 h-7 rounded-lg bg-[#16181C] border border-white/10 flex items-center justify-center cursor-pointer flex-none disabled:opacity-30">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#cfcfca" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
       <div className="px-5 pb-3 flex-none">
         <div className="flex items-baseline gap-2 mb-3">
-          <span className="font-bebas text-[30px] text-[#F3F0E9] leading-none">Hoy</span>
+          <span className="font-bebas text-[30px] text-[#F3F0E9] leading-none">{esHoy ? 'Hoy' : diasNombre[diaSemana]}</span>
           <span className="text-[13px] text-[#9a9a97]">
-            {diasNombre[diaSemana]}, {hoy.getDate()} de {mesesNombre[hoy.getMonth()]}
+            {esHoy ? `${diasNombre[diaSemana]}, ` : ''}{fechaObj.getDate()} de {mesesNombre[fechaObj.getMonth()]}
           </span>
         </div>
+        {diaSemana === 0 ? (
+          <p className="text-[13px] text-[#8c8c89] m-0">El local está cerrado los domingos.</p>
+        ) : (
         <div className="flex gap-2">
           <Stat value={totalConTurno} label="turnos" />
           <Stat value={libres} label="libres" />
           <Stat value={estimado > 0 ? `$${Math.round(estimado/1000)}k` : '$0'} label="estimado" red />
         </div>
+        )}
       </div>
 
-      {cargando ? (
+      {diaSemana === 0 ? (
+        <div className="flex-1 flex items-center justify-center">
+          <span className="text-[#3a3d44] text-[48px]">🔒</span>
+        </div>
+      ) : cargando ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-[#CE2434] border-t-transparent rounded-full animate-spin" />
         </div>
