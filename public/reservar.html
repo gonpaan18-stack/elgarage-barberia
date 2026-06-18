@@ -420,11 +420,16 @@ async function buildTimes(){
 
 // ─── Selections ───
 function selectService(el){
-  document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  state.service=el.dataset.service;
-  state.price=parseInt(el.dataset.price);
-  state.desc=el.dataset.desc;
+  el.classList.toggle('selected');
+  // Recalcular servicios, precio y desc desde todas las cards seleccionadas
+  const sels=[...document.querySelectorAll('.service-card.selected')];
+  if(sels.length===0){
+    state.service=null; state.price=0; state.desc='';
+  } else {
+    state.service=sels.map(c=>c.dataset.service).join(' + ');
+    state.price=sels.reduce((a,c)=>a+parseInt(c.dataset.price),0);
+    state.desc=sels.map(c=>c.dataset.desc).join(', ');
+  }
   updateCTA();
 }
 function selectDay(el){
@@ -444,7 +449,7 @@ function selectTime(el,t){
 }
 
 function goToUserForm(){
-  if(!state.service||!state.day||!state.time) return;
+  if(!state.service||!state.day||!state.time||!state.price) return;
   document.getElementById('confirm-service-name').textContent=state.service;
   document.getElementById('confirm-service-desc').textContent=state.desc;
   document.getElementById('confirm-price').textContent=`$${state.price.toLocaleString('es-AR')}`;
@@ -501,7 +506,7 @@ function showScreen(id){
 
 function volverInicio(){
   // Resetear estado
-  Object.assign(state,{service:null,day:null,time:null,price:null,desc:null,date:null});
+  Object.assign(state,{service:null,day:null,time:null,price:0,desc:null,date:null});
   // Limpiar selecciones visuales
   document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
   document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('selected'));
@@ -514,11 +519,11 @@ function volverInicio(){
 }
 
 function updateCTA(){
-  const ready=state.service&&state.day&&state.time;
+  const ready=state.service&&state.day&&state.time&&state.price;
   const btn=document.getElementById('cta-btn');
   btn.classList.toggle('ready',!!ready);
   if(ready){
-    document.getElementById('cta-label').textContent=`${state.service} · ${state.day}, ${state.time}`;
+    document.getElementById('cta-label').textContent=`${state.day}, ${state.time}`;
     document.getElementById('cta-price').textContent=`$${state.price.toLocaleString('es-AR')}`;
   }else{
     document.getElementById('cta-label').textContent='Elegí servicio, día y hora';
