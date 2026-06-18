@@ -362,7 +362,9 @@ async function buildTimes(){
 
   let desdeH=10, hastaH=20, intervalo=20;
   const p = perfilCache;
-  if(p.horarioSemana){ const parts=p.horarioSemana.split(/[–\-]/).map(s=>s.trim()); desdeH=parseInt(parts[0])||10; hastaH=parseInt(parts[1])||20; }
+  const esSabado = state.date ? (([y,m,d])=>new Date(+y,+m-1,+d))(state.date.split('-')).getDay()===6 : false;
+  const horario = esSabado ? (p.horarioSabado||p.horarioSemana) : p.horarioSemana;
+  if(horario){ const parts=horario.split(/[–\-]/).map(s=>s.trim()); desdeH=parseInt(parts[0])||10; hastaH=parseInt(parts[1])||20; }
   if(p.intervalo) intervalo=parseInt(p.intervalo)||20;
 
   let ocupados={};
