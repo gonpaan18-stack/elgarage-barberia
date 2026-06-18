@@ -11,7 +11,7 @@
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;height:100%;background:#0E0F11;font-family:Barlow,sans-serif;-webkit-font-smoothing:antialiased}
-  body::before{content:'';position:fixed;inset:0;background:url('/fondo.webp') repeat;background-size:420px;opacity:.07;pointer-events:none;z-index:0}
+  body::before{content:'';position:fixed;inset:0;background:url('/fondo.webp') repeat;background-size:420px;opacity:.18;pointer-events:none;z-index:0}
   .screen{position:relative;z-index:1}
   ::-webkit-scrollbar{display:none}
 
@@ -54,15 +54,15 @@
   .day-pill{flex:none;width:52px;padding:9px 0;border-radius:14px;text-align:center;background:#16181C;border:1px solid rgba(255,255,255,.09);cursor:pointer;transition:background .18s,border-color .18s}
   .day-pill.selected{background:#CE2434;border-color:#CE2434}
   .day-pill.closed{opacity:.4;cursor:default}
-  .day-pill .day-name{font-size:10px;letter-spacing:.08em;color:#8c8c89;text-transform:uppercase}
+  .day-pill .day-name{font-size:10px;letter-spacing:.08em;color:#c0c0bc;text-transform:uppercase}
   .day-pill.selected .day-name{color:#fff;opacity:.85}
-  .day-pill .day-num{font-family:'Bebas Neue',sans-serif;font-size:23px;color:#cfcfca;line-height:1.1}
+  .day-pill .day-num{font-family:'Bebas Neue',sans-serif;font-size:23px;color:#ffffff;line-height:1.1}
   .day-pill.selected .day-num{color:#fff}
 
   /* Times scroll */
   .times-grid{display:flex;flex-direction:row;gap:8px;padding:0 20px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
   .times-grid::-webkit-scrollbar{display:none}
-  .time-slot{flex:none;padding:10px 16px;border-radius:11px;text-align:center;font-weight:600;font-size:13px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#cfcfca;cursor:pointer;transition:background .18s,border-color .18s;white-space:nowrap}
+  .time-slot{flex:none;padding:10px 16px;border-radius:11px;text-align:center;font-weight:600;font-size:13px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#ffffff;cursor:pointer;transition:background .18s,border-color .18s;white-space:nowrap}
   .time-slot.selected{background:#CE2434;border-color:#CE2434;color:#fff;font-weight:700}
   .time-slot.taken{background:transparent;border:1px dashed rgba(255,255,255,.14);color:#5b5d62;text-decoration:line-through;cursor:default}
 
