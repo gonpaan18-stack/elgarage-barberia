@@ -25,7 +25,14 @@ export default function Perfil({ onLogout }) {
   }, [])
 
   function set(key, val) { setLocalData(prev => ({ ...prev, [key]: val })) }
-  function setPrecio(key, val) { setLocalData(prev => ({ ...prev, precios: { ...prev.precios, [key]: val } })) }
+
+  async function setPrecio(key, val) {
+    const next = { ...data, precios: { ...data.precios, [key]: val } }
+    setLocalData(next)
+    await setData('perfil', next)
+    setGuardado(true)
+    setTimeout(() => setGuardado(false), 2000)
+  }
 
   async function guardar() {
     await setData('perfil', data)
