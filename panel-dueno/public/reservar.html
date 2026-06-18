@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>El Garage — Reservar turno</title>
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%;background:#0E0F11;font-family:Barlow,sans-serif;-webkit-font-smoothing:antialiased}
+  ::-webkit-scrollbar{display:none}
+
+  /* Layout */
+  .screen{display:none;flex-direction:column;min-height:100vh;background:#0E0F11;color:#F3F0E9;max-width:430px;margin:0 auto;position:relative}
+  .screen.active{display:flex}
+
+  /* Flag stripe */
+  .flag-stripe{height:4px;background:repeating-linear-gradient(135deg,#CE2434 0 8px,#F3F0E9 8px 16px,#21458F 16px 24px,#F3F0E9 24px 32px);flex:none}
+
+  /* Brand header */
+  .brand-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 8px;flex:none}
+  .brand-header .logo-group{display:flex;align-items:center;gap:9px}
+  .brand-header .logo{width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none;display:block}
+  .brand-header .name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.05em;color:#F3F0E9;line-height:1}
+  .brand-header .subtitle{font-size:9px;letter-spacing:.22em;color:#7c7e84;text-transform:uppercase}
+  .brand-header .location{display:flex;align-items:center;gap:5px;background:#16181C;border:1px solid rgba(255,255,255,.08);padding:6px 10px;border-radius:20px;font-size:11px;color:#cfcfca;font-weight:600}
+
+  /* Hero */
+  .hero{padding:6px 20px 2px;flex:none}
+  .hero h1{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.01em;color:#F3F0E9;line-height:.92;margin:0}
+  .hero p{font-size:12.5px;color:#9a9a97;margin:6px 0 0}
+
+  /* Steps */
+  .steps{flex:1;display:flex;flex-direction:column;gap:15px;padding-top:14px;overflow:hidden}
+  .step-label{font-size:11px;font-weight:700;letter-spacing:.06em;color:#CE2434;padding:0 20px 9px}
+
+  /* Services scroll */
+  .services-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 20px 4px}
+  .service-card{flex:none;width:138px;background:#16181C;border:1.5px solid rgba(255,255,255,.09);border-radius:16px;padding:13px;cursor:pointer;transition:border-color .18s,background .18s;position:relative}
+  .service-card.selected{border-color:#CE2434;background:#1c1a17}
+  .service-card .check{position:absolute;top:11px;right:11px;width:18px;height:18px;border-radius:50%;background:#CE2434;display:none;align-items:center;justify-content:center}
+  .service-card.selected .check{display:flex}
+  .service-card .svc-name{font-family:'Bebas Neue',sans-serif;font-size:21px;color:#F3F0E9;line-height:1}
+  .service-card .svc-desc{font-size:10.5px;color:#8c8c89;margin:2px 0 12px;height:26px}
+  .service-card .svc-price{font-weight:800;font-size:17px;color:#F3F0E9}
+
+  /* Days scroll */
+  .days-scroll{display:flex;gap:9px;overflow-x:auto;padding:0 20px 4px}
+  .day-pill{flex:none;width:52px;padding:9px 0;border-radius:14px;text-align:center;background:#16181C;border:1px solid rgba(255,255,255,.09);cursor:pointer;transition:background .18s,border-color .18s}
+  .day-pill.selected{background:#CE2434;border-color:#CE2434}
+  .day-pill.closed{opacity:.4;cursor:default}
+  .day-pill .day-name{font-size:10px;letter-spacing:.08em;color:#8c8c89;text-transform:uppercase}
+  .day-pill.selected .day-name{color:#fff;opacity:.85}
+  .day-pill .day-num{font-family:'Bebas Neue',sans-serif;font-size:23px;color:#cfcfca;line-height:1.1}
+  .day-pill.selected .day-num{color:#fff}
+
+  /* Times grid */
+  .times-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px}
+  .time-slot{padding:10px 0;border-radius:11px;text-align:center;font-weight:600;font-size:13px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#cfcfca;cursor:pointer;transition:background .18s,border-color .18s}
+  .time-slot.selected{background:#CE2434;border-color:#CE2434;color:#fff;font-weight:700}
+  .time-slot.taken{background:transparent;border:1px dashed rgba(255,255,255,.14);color:#5b5d62;text-decoration:line-through;cursor:default}
+
+  /* CTA bar */
+  .cta-bar{flex:none;display:flex;align-items:center;justify-content:space-between;padding:13px 18px 22px;border-top:1px solid rgba(255,255,255,.07);background:#0B0C0E}
+  .cta-summary .label{font-size:10.5px;color:#8c8c89}
+  .cta-summary .price{font-weight:800;font-size:18px;color:#F3F0E9}
+  .cta-btn{display:flex;align-items:center;gap:8px;background:#CE2434;color:#fff;font-weight:700;font-size:14px;padding:13px 22px;border-radius:14px;cursor:pointer;border:none;font-family:Barlow,sans-serif;opacity:.5;transition:opacity .18s}
+  .cta-btn.ready{opacity:1}
+
+  /* ===== CONFIRMATION SCREEN ===== */
+  .confirm-hero{padding:30px 24px 22px;display:flex;flex-direction:column;align-items:center;text-align:center;flex:none}
+  .confirm-icon{width:74px;height:74px;border-radius:50%;background:rgba(206,36,52,.13);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+  .confirm-icon-inner{width:50px;height:50px;border-radius:50%;background:#CE2434;display:flex;align-items:center;justify-content:center}
+  .confirm-hero h2{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:.02em;color:#F3F0E9;line-height:.95;margin:0}
+  .confirm-hero p{font-size:13px;color:#9a9a97;margin:8px 0 0;max-width:250px}
+
+  .summary-card{margin:0 20px;background:#16181C;border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;flex:none}
+  .summary-card .stripe{height:4px;background:repeating-linear-gradient(135deg,#CE2434 0 8px,#F3F0E9 8px 16px,#21458F 16px 24px,#F3F0E9 24px 32px)}
+  .summary-card .inner{padding:18px 18px 6px}
+  .summary-card .svc-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .summary-card .svc-row .name{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#F3F0E9;line-height:1}
+  .summary-card .svc-row .desc{font-size:11px;color:#8c8c89}
+  .summary-card .svc-row .svc-price{font-weight:800;font-size:18px;color:#F3F0E9}
+  .summary-card .details{display:flex;flex-direction:column;gap:13px;padding:15px 0}
+  .detail-row{display:flex;align-items:center;gap:11px;font-size:13.5px;color:#dcdcd8;font-weight:500}
+
+  .actions{padding:18px 20px 0;flex:none}
+  .gcal-btn{display:flex;align-items:center;justify-content:center;gap:11px;background:#F3F0E9;color:#16181C;font-weight:700;font-size:14.5px;padding:15px;border-radius:14px;cursor:pointer;border:none;font-family:Barlow,sans-serif;width:100%}
+  .secondary-btns{display:flex;gap:11px;margin-top:11px}
+  .sec-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#dcdcd8;font-weight:600;font-size:13px;padding:13px;border-radius:14px;cursor:pointer;border:1px solid rgba(255,255,255,.09);font-family:Barlow,sans-serif}
+
+  .footer-note{margin-top:auto;display:flex;align-items:center;gap:8px;justify-content:center;padding:16px 20px 24px;flex:none}
+  .footer-note span{font-size:11.5px;color:#8c8c89}
+
+  /* User form (step before confirm) */
+  .user-form{padding:14px 20px 0;display:flex;flex-direction:column;gap:12px;flex:none}
+  .user-form input{background:#16181C;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 14px;font-size:14px;color:#F3F0E9;font-family:Barlow,sans-serif;outline:none;width:100%;transition:border-color .18s}
+  .user-form input:focus{border-color:#CE2434}
+  .user-form input::placeholder{color:#6b6e74}
+</style>
+</head>
+<body>
+
+<!-- ===== SCREEN 1: BOOKING ===== -->
+<div class="screen active" id="screen-booking">
+  <div class="flag-stripe"></div>
+
+  <!-- Brand -->
+  <div class="brand-header">
+    <div class="logo-group">
+      <img src="/logo.png" alt="El Garage" class="logo">
+      <div>
+        <div class="name">El Garage</div>
+        <div class="subtitle">Barber Shop</div>
+      </div>
+    </div>
+    <div class="location">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="2.4"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+      Lanús
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Reservá<br>tu turno</h1>
+    <p>Elegí servicio, día y horario. Te confirma al instante.</p>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+    <!-- 1 · Servicio -->
+    <div>
+      <div class="step-label">1 · SERVICIO</div>
+      <div class="services-scroll" id="services">
+        <div class="service-card" data-service="Corte" data-price="14000" data-desc="con/sin barba y ceja" onclick="selectService(this)">
+          <div class="check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          <div class="svc-name">Corte</div>
+          <div class="svc-desc">con/sin barba y ceja</div>
+          <div class="svc-price">$14.000</div>
+        </div>
+        <div class="service-card" data-service="Promo padre/hijo" data-price="26000" data-desc="2 cortes juntos" onclick="selectService(this)">
+          <div class="check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          <div class="svc-name">Promo padre/hijo</div>
+          <div class="svc-desc">2 cortes juntos</div>
+          <div class="svc-price">$26.000</div>
+        </div>
+        <div class="service-card" data-service="Corte niño" data-price="12000" data-desc="hasta 12 años" onclick="selectService(this)">
+          <div class="check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          <div class="svc-name">Corte niño</div>
+          <div class="svc-desc">hasta 12 años</div>
+          <div class="svc-price">$12.000</div>
+        </div>
+        <div class="service-card" data-service="Barba" data-price="6000" data-desc="perfilado + toalla" onclick="selectService(this)">
+          <div class="check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          <div class="svc-name">Barba</div>
+          <div class="svc-desc">perfilado + toalla</div>
+          <div class="svc-price">$6.000</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · Día -->
+    <div>
+      <div class="step-label">2 · DÍA</div>
+      <div class="days-scroll" id="days"></div>
+    </div>
+
+    <!-- 3 · Horario -->
+    <div>
+      <div class="step-label">3 · HORARIO</div>
+      <div class="times-grid" id="times"></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-bar">
+    <div class="cta-summary">
+      <div class="label" id="cta-label">Elegí servicio, día y hora</div>
+      <div class="price" id="cta-price"></div>
+    </div>
+    <button class="cta-btn" id="cta-btn" onclick="goToUserForm()">
+      Continuar
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: USER DATA ===== -->
+<div class="screen" id="screen-user">
+  <div class="flag-stripe"></div>
+  <div class="brand-header">
+    <div class="logo-group">
+      <img src="/logo.png" alt="El Garage" class="logo">
+      <div>
+        <div class="name">El Garage</div>
+        <div class="subtitle">Barber Shop</div>
+      </div>
+    </div>
+    <button onclick="goBack()" style="background:#16181C;border:1px solid rgba(255,255,255,.1);color:#cfcfca;padding:7px 13px;border-radius:10px;font-family:Barlow,sans-serif;font-size:12px;cursor:pointer">← Volver</button>
+  </div>
+
+  <div class="hero" style="margin-bottom:6px">
+    <h1 style="font-size:32px">Tus datos</h1>
+    <p>Para reservar el turno necesitamos tu nombre y teléfono.</p>
+  </div>
+
+  <div class="summary-card" style="margin:14px 20px 0">
+    <div class="stripe"></div>
+    <div class="inner">
+      <div class="svc-row">
+        <div>
+          <div class="name" id="confirm-service-name"></div>
+          <div class="desc" id="confirm-service-desc"></div>
+        </div>
+        <div class="svc-price" id="confirm-price"></div>
+      </div>
+      <div class="details">
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+          <span id="confirm-datetime"></span>
+        </div>
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+          <span>R. de Escalada, Lanús</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="user-form">
+    <input type="text" id="input-name" placeholder="Tu nombre" autocomplete="given-name">
+    <input type="tel" id="input-phone" placeholder="Tu teléfono (WhatsApp)" autocomplete="tel">
+  </div>
+
+  <div style="padding:16px 20px 0">
+    <button class="cta-btn ready" style="width:100%;justify-content:center;gap:10px" onclick="confirmBooking()">
+      Confirmar turno
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg>
+    </button>
+  </div>
+  <div class="footer-note">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8c8c89" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+    <span>Llegá 5 min antes · Cupos limitados</span>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: CONFIRMED ===== -->
+<div class="screen" id="screen-confirmed">
+  <div class="confirm-hero">
+    <div class="confirm-icon">
+      <div class="confirm-icon-inner">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+    </div>
+    <h2>¡Turno confirmado!</h2>
+    <p>Te esperamos, <b id="confirmed-name" style="color:#cfcfca">amigo</b>. Guardá el turno en tu calendario para no olvidarte.</p>
+  </div>
+
+  <div class="summary-card">
+    <div class="stripe"></div>
+    <div class="inner">
+      <div class="svc-row">
+        <div>
+          <div class="name" id="confirmed-service-name"></div>
+          <div class="desc" id="confirmed-service-desc"></div>
+        </div>
+        <div class="svc-price" id="confirmed-price"></div>
+      </div>
+      <div class="details">
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+          <span id="confirmed-datetime"></span>
+        </div>
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
+          <span>Barbero: Erik Fenanti</span>
+        </div>
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+          <span>R. de Escalada, Lanús</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="gcal-btn" id="gcal-btn" onclick="addToCalendar()">
+      <svg width="20" height="20" viewBox="0 0 48 48"><rect x="9" y="9" width="30" height="30" rx="3" fill="#fff"/><path d="M9 14a3 3 0 0 1 3-3h24a3 3 0 0 1 3 3v4H9z" fill="#4285F4"/><path d="M9 14h30v20a3 3 0 0 1-3 3H12a3 3 0 0 1-3-3z" fill="#fff"/><text x="24" y="32" font-family="Barlow,sans-serif" font-size="14" font-weight="700" fill="#4285F4" text-anchor="middle" id="gcal-day">20</text></svg>
+      Agregar a Google Calendar
+    </button>
+    <div class="secondary-btns">
+      <button class="sec-btn" onclick="whatsapp()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5 0a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2a.4.4 0 0 0 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11 11 0 0 0 4.3 3.8c1.6.7 1.8.5 2.2.5a2.5 2.5 0 0 0 1.6-1.2 2 2 0 0 0 .2-1.2c-.1-.1-.2-.2-.4-.3z"/></svg>
+        WhatsApp
+      </button>
+      <button class="sec-btn" onclick="window.open('https://maps.google.com/?q=R.+de+Escalada+Lanus')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#21458F" stroke-width="1.9"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+        Cómo llegar
+      </button>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8c8c89" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+    <span>Llegá 5 min antes · Cupos limitados</span>
+  </div>
+
+  <div style="padding:0 20px 28px;flex:none">
+    <button onclick="volverInicio()" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);color:#8c8c89;font-family:Barlow,sans-serif;font-size:13px;font-weight:600;padding:13px;border-radius:14px;cursor:pointer">
+      ← Reservar otro turno
+    </button>
+  </div>
+</div>
+
+<script>
+// ─── State ───
+const state = {service:null, day:null, time:null};
+let perfilCache = {};
+
+// ─── API helpers ───
+function fechaLocal(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` }
+async function apiGet(clave){ try{ const r=await fetch(`/api/datos/${encodeURIComponent(clave)}`); return r.ok?r.json():null }catch{return null} }
+async function apiPut(clave,val){ await fetch(`/api/datos/${encodeURIComponent(clave)}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(val)}) }
+
+// ─── Inicializar: cargar perfil ───
+async function init(){
+  const p = await apiGet('perfil');
+  if(p) perfilCache = p;
+  buildDays();
+  buildTimes();
+}
+init();
+
+// ─── Generate days (next 7 days, skip Sunday) ───
+function buildDays(){
+  const cont=document.getElementById('days');
+  const names=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const now=new Date();
+  let built=0,offset=0;
+  while(built<7){
+    const d=new Date(now);d.setDate(now.getDate()+offset++);
+    const dow=d.getDay();
+    const isSun=dow===0;
+    const pill=document.createElement('div');
+    pill.className='day-pill'+(isSun?' closed':'');
+    pill.dataset.date=fechaLocal(d);
+    pill.dataset.label=`${names[dow]} ${d.getDate()}`;
+    pill.innerHTML=`<div class="day-name">${names[dow]}</div><div class="day-num">${d.getDate()}</div>`;
+    if(!isSun) pill.onclick=()=>selectDay(pill);
+    cont.appendChild(pill);
+    built++;
+  }
+}
+
+// ─── Generate times ───
+async function buildTimes(){
+  const cont=document.getElementById('times');
+  cont.innerHTML='<div style="color:#6b6e74;font-size:12px;padding:8px 0;text-align:center;grid-column:1/-1">Cargando...</div>';
+
+  let desdeH=10, hastaH=20, intervalo=20;
+  const p = perfilCache;
+  if(p.horarioSemana){ const parts=p.horarioSemana.split(/[–\-]/).map(s=>s.trim()); desdeH=parseInt(parts[0])||10; hastaH=parseInt(parts[1])||20; }
+  if(p.intervalo) intervalo=parseInt(p.intervalo)||20;
+
+  let ocupados={};
+  if(state.date){
+    const data = await apiGet(`turnos_${state.date}`);
+    if(data) ocupados=data;
+  }
+
+  cont.innerHTML='';
+  const slots=[];
+  let h=desdeH, m=0;
+  while(h<hastaH){ slots.push(`${h}:${m.toString().padStart(2,'0')}`); m+=intervalo; while(m>=60){m-=60;h++;} }
+
+  slots.forEach(t=>{
+    const el=document.createElement('div');
+    const taken=!!(ocupados[t]&&ocupados[t].nombre);
+    el.className='time-slot'+(taken?' taken':'');
+    el.textContent=t;
+    if(!taken) el.onclick=()=>selectTime(el,t);
+    cont.appendChild(el);
+  });
+}
+
+// ─── Selections ───
+function selectService(el){
+  document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.service=el.dataset.service;
+  state.price=parseInt(el.dataset.price);
+  state.desc=el.dataset.desc;
+  updateCTA();
+}
+function selectDay(el){
+  document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  state.day=el.dataset.label;
+  state.date=el.dataset.date;
+  state.time=null;
+  buildTimes();
+  updateCTA();
+}
+function selectTime(el,t){
+  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+  state.time=t;
+  updateCTA();
+}
+
+function goToUserForm(){
+  if(!state.service||!state.day||!state.time) return;
+  document.getElementById('confirm-service-name').textContent=state.service;
+  document.getElementById('confirm-service-desc').textContent=state.desc;
+  document.getElementById('confirm-price').textContent=`$${state.price.toLocaleString('es-AR')}`;
+  document.getElementById('confirm-datetime').textContent=`${state.day} · ${state.time} hs`;
+  showScreen('screen-user');
+}
+
+function goBack(){showScreen('screen-booking');}
+
+async function confirmBooking(){
+  const name=document.getElementById('input-name').value.trim();
+  const phone=document.getElementById('input-phone').value.trim();
+  if(!name){document.getElementById('input-name').focus();return;}
+  if(!phone){document.getElementById('input-phone').focus();return;}
+
+  // Deshabilitar botón mientras guarda
+  const btn=document.querySelector('#screen-user .cta-btn');
+  if(btn){btn.textContent='Guardando...';btn.style.opacity='.6';btn.onclick=null;}
+
+  // Guardar en la API → sincroniza con el panel del dueño en tiempo real
+  const clave=`turnos_${state.date}`;
+  const existing=(await apiGet(clave))||{};
+  existing[state.time]={nombre:name,servicio:state.service,precio:state.price,estado:'pendiente',tipo:'nuevo'};
+  await apiPut(clave,existing);
+
+  document.getElementById('confirmed-name').textContent=name.split(' ')[0];
+  document.getElementById('confirmed-service-name').textContent=state.service;
+  document.getElementById('confirmed-service-desc').textContent=state.desc;
+  document.getElementById('confirmed-price').textContent=`$${state.price.toLocaleString('es-AR')}`;
+  document.getElementById('confirmed-datetime').textContent=`${state.day} · ${state.time} hs`;
+  document.getElementById('gcal-day').textContent=state.day?state.day.split(' ').pop():'';
+
+  const d=new Date(`${state.date}T${state.time}:00`);
+  const end=new Date(d.getTime()+30*60000);
+  const fmt=dt=>dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  state.calUrl=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=Turno+El+Garage+-+${encodeURIComponent(state.service)}&dates=${fmt(d)}/${fmt(end)}&details=Barbero:+Erik+Fenanti&location=R.+de+Escalada,+Lanús`;
+  state.name=name; state.phone=phone;
+
+  showScreen('screen-confirmed');
+}
+
+function addToCalendar(){window.open(state.calUrl,'_blank');}
+
+function whatsapp(){
+  const msg=`Hola! Acabo de reservar un turno en El Garage:\n*${state.service}* · ${state.day} · ${state.time} hs`;
+  window.open(`https://wa.me/5491100000000?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function volverInicio(){
+  // Resetear estado
+  Object.assign(state,{service:null,day:null,time:null,price:null,desc:null,date:null});
+  // Limpiar selecciones visuales
+  document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('selected'));
+  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
+  // Limpiar formulario
+  document.getElementById('input-name').value='';
+  document.getElementById('input-phone').value='';
+  updateCTA();
+  showScreen('screen-booking');
+}
+
+function updateCTA(){
+  const ready=state.service&&state.day&&state.time;
+  const btn=document.getElementById('cta-btn');
+  btn.classList.toggle('ready',!!ready);
+  if(ready){
+    document.getElementById('cta-label').textContent=`${state.service} · ${state.day}, ${state.time}`;
+    document.getElementById('cta-price').textContent=`$${state.price.toLocaleString('es-AR')}`;
+  }else{
+    document.getElementById('cta-label').textContent='Elegí servicio, día y hora';
+    document.getElementById('cta-price').textContent='';
+  }
+}
+</script>
+</body>
+</html>
