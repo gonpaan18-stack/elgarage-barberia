@@ -361,12 +361,14 @@ async function buildTimes(){
   const cont=document.getElementById('times');
   cont.innerHTML='<div style="color:#6b6e74;font-size:12px;padding:8px 0;text-align:center;grid-column:1/-1">Cargando...</div>';
 
-  let desdeH=10, hastaH=20, intervalo=20;
   const p = perfilCache;
   const esSabado = state.date ? (([y,m,d])=>new Date(+y,+m-1,+d))(state.date.split('-')).getDay()===6 : false;
-  const horario = esSabado ? (p.horarioSabado||p.horarioSemana) : p.horarioSemana;
-  if(horario){ const parts=horario.split(/[–\-]/).map(s=>s.trim()); desdeH=parseInt(parts[0])||10; hastaH=parseInt(parts[1])||20; }
-  if(p.intervalo) intervalo=parseInt(p.intervalo)||20;
+  const horarioDefault = esSabado ? '9:00 – 19:00' : '10:00 – 20:00';
+  const horario = (esSabado ? (p.horarioSabado||p.horarioSemana) : p.horarioSemana) || horarioDefault;
+  const parts = horario.split(/[–\-]/).map(s=>s.trim());
+  let desdeH=parseInt(parts[0])||( esSabado?9:10 );
+  let hastaH=parseInt(parts[1])||( esSabado?19:20 );
+  let intervalo=parseInt(p.intervalo)||20;
 
   let ocupados={};
   if(state.date){

@@ -13,7 +13,7 @@ function parseRango(rango) {
 
 function generarSlots(perfil, diaSemana) {
   if (diaSemana === 0) return []
-  const rango = diaSemana === 6 ? perfil.horarioSabado : perfil.horarioSemana
+  const rango = (diaSemana === 6 ? perfil.horarioSabado : perfil.horarioSemana) || PERFIL_DEFAULT[diaSemana === 6 ? 'horarioSabado' : 'horarioSemana']
   const intervalo = parseInt(perfil.intervalo) || 20
   const { desdeH, desdeM, hastaH, hastaM } = parseRango(rango)
   const slots = []
