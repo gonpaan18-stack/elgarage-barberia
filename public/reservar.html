@@ -3,547 +3,533 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Reservar turno</title>
+<title>El Garage — Reservar turno</title>
 <link rel="icon" type="image/png" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-  html,body{height:100%;background:#0E0F11;font-family:Barlow,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%;background:#0E0F11;font-family:Barlow,sans-serif;-webkit-font-smoothing:antialiased}
   body::before{content:'';position:fixed;inset:0;background:url('/fondo.webp') repeat;background-size:420px;opacity:.08;pointer-events:none;z-index:0}
+  .screen{position:relative;z-index:1}
   ::-webkit-scrollbar{display:none}
 
-  /* App shell */
-  #app{height:100dvh;max-width:430px;margin:0 auto;display:flex;flex-direction:column;position:relative;z-index:1;overflow:hidden}
-
-  /* Flag stripe */
-  .flag-stripe{height:4px;flex:none;background:repeating-linear-gradient(135deg,#CE2434 0 8px,#F3F0E9 8px 16px,#21458F 16px 24px,#F3F0E9 24px 32px)}
-
-  /* Brand header */
-  .brand-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 8px;flex:none}
-  .logo-group{display:flex;align-items:center;gap:9px}
-  .logo-img{width:32px;height:32px;border-radius:50%;object-fit:cover;flex:none;display:block}
-  .logo-fallback{width:32px;height:32px;border-radius:50%;background:#CE2434;flex:none;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;color:#fff;letter-spacing:.05em}
-  .brand-name{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.05em;color:#F3F0E9;line-height:1}
-  .brand-sub{font-size:9px;letter-spacing:.22em;color:#7c7e84;text-transform:uppercase}
-  .location-chip{display:flex;align-items:center;gap:5px;background:#16181C;border:1px solid rgba(255,255,255,.08);padding:6px 10px;border-radius:20px;font-size:11px;color:#cfcfca;font-weight:600;white-space:nowrap}
-
-  /* Hero */
-  .hero{padding:4px 18px 0;flex:none}
-  .hero h1{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:.01em;color:#F3F0E9;line-height:.92}
-  .hero p{font-size:12px;color:#9a9a97;margin-top:5px}
-
-  /* Screens */
-  .screen{display:none;flex-direction:column;flex:1;min-h:0;overflow:hidden}
+  /* Layout */
+  .screen{display:none;flex-direction:column;min-height:100vh;background:transparent;color:#F3F0E9;max-width:430px;margin:0 auto;position:relative}
   .screen.active{display:flex}
 
+  /* Flag stripe */
+  .flag-stripe{height:4px;background:repeating-linear-gradient(135deg,#CE2434 0 8px,#F3F0E9 8px 16px,#21458F 16px 24px,#F3F0E9 24px 32px);flex:none}
+
+  /* Brand header */
+  .brand-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 8px;flex:none}
+  .brand-header .logo-group{display:flex;align-items:center;gap:9px}
+  .brand-header .logo{width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none;display:block}
+  .brand-header .name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.05em;color:#F3F0E9;line-height:1}
+  .brand-header .subtitle{font-size:9px;letter-spacing:.22em;color:#7c7e84;text-transform:uppercase}
+  .brand-header .location{display:flex;align-items:center;gap:5px;background:#16181C;border:1px solid rgba(255,255,255,.08);padding:6px 10px;border-radius:20px;font-size:11px;color:#cfcfca;font-weight:600}
+
+  /* Hero */
+  .hero{padding:6px 20px 2px;flex:none}
+  .hero h1{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.01em;color:#F3F0E9;line-height:.92;margin:0}
+  .hero p{font-size:12.5px;color:#9a9a97;margin:6px 0 0}
+
   /* Steps */
-  .steps{flex:1;display:flex;flex-direction:column;gap:14px;padding-top:12px;overflow:hidden;min-h:0}
-  .step-label{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:#CE2434;padding:0 18px 8px;flex:none}
+  .steps{flex:1;display:flex;flex-direction:column;gap:15px;padding-top:14px;overflow:hidden}
+  .step-label{font-size:11px;font-weight:700;letter-spacing:.06em;color:#CE2434;padding:0 20px 9px}
 
   /* Services scroll */
-  .services-scroll{display:flex;gap:9px;overflow-x:auto;padding:0 18px 4px;flex:none}
-  .service-card{flex:none;width:132px;background:#16181C;border:1.5px solid rgba(255,255,255,.09);border-radius:14px;padding:12px;cursor:pointer;transition:border-color .18s,background .18s;position:relative}
+  .services-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 20px 4px}
+  .service-card{flex:none;width:138px;background:#16181C;border:1.5px solid rgba(255,255,255,.09);border-radius:16px;padding:13px;cursor:pointer;transition:border-color .18s,background .18s;position:relative}
   .service-card.selected{border-color:#CE2434;background:#1c1a17}
-  .check{position:absolute;top:10px;right:10px;width:17px;height:17px;border-radius:50%;background:#CE2434;display:none;align-items:center;justify-content:center}
+  .service-card .check{position:absolute;top:11px;right:11px;width:18px;height:18px;border-radius:50%;background:#CE2434;display:none;align-items:center;justify-content:center}
   .service-card.selected .check{display:flex}
-  .svc-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#F3F0E9;line-height:1}
-  .svc-desc{font-size:10px;color:#8c8c89;margin:2px 0 10px;min-height:24px}
-  .svc-price{font-weight:800;font-size:16px;color:#F3F0E9}
+  .service-card .svc-name{font-family:'Bebas Neue',sans-serif;font-size:21px;color:#F3F0E9;line-height:1}
+  .service-card .svc-desc{font-size:10.5px;color:#8c8c89;margin:2px 0 12px;height:26px}
+  .service-card .svc-price{font-weight:800;font-size:17px;color:#F3F0E9}
 
   /* Days scroll */
-  .days-scroll{display:flex;gap:8px;overflow-x:auto;padding:0 18px 4px;flex:none}
-  .day-pill{flex:none;width:50px;padding:8px 0;border-radius:13px;text-align:center;background:#16181C;border:1px solid rgba(255,255,255,.09);cursor:pointer;transition:background .18s,border-color .18s}
+  .days-scroll{display:flex;gap:9px;overflow-x:auto;padding:0 20px 4px}
+  .day-pill{flex:none;width:52px;padding:9px 0;border-radius:14px;text-align:center;background:#16181C;border:1px solid rgba(255,255,255,.09);cursor:pointer;transition:background .18s,border-color .18s}
   .day-pill.selected{background:#CE2434;border-color:#CE2434}
-  .day-pill.closed{opacity:.35;cursor:default}
-  .day-name{font-size:9.5px;letter-spacing:.08em;color:#c0c0bc;text-transform:uppercase}
-  .day-pill.selected .day-name{color:rgba(255,255,255,.85)}
-  .day-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;line-height:1.1}
+  .day-pill.closed{opacity:.4;cursor:default}
+  .day-pill .day-name{font-size:10px;letter-spacing:.08em;color:#c0c0bc;text-transform:uppercase}
+  .day-pill.selected .day-name{color:#fff;opacity:.85}
+  .day-pill .day-num{font-family:'Bebas Neue',sans-serif;font-size:23px;color:#ffffff;line-height:1.1}
+  .day-pill.selected .day-num{color:#fff}
 
   /* Times scroll */
-  .times-wrap{flex:1;overflow-x:auto;overflow-y:hidden;padding:0 18px;display:flex;align-items:center;min-h:0}
-  .times-grid{display:flex;gap:8px;align-items:center;min-h:44px}
-  .time-slot{flex:none;padding:9px 14px;border-radius:10px;font-weight:600;font-size:13px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#fff;cursor:pointer;transition:background .18s,border-color .18s;white-space:nowrap}
-  .time-slot.selected{background:#CE2434;border-color:#CE2434;font-weight:700}
-  .time-slot.taken{background:transparent;border:1px dashed rgba(255,255,255,.13);color:#4a4d54;text-decoration:line-through;cursor:default}
-  .times-empty{font-size:12px;color:#6b6e74;padding:8px 0}
+  .times-grid{display:flex;flex-direction:row;gap:8px;padding:0 20px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .times-grid::-webkit-scrollbar{display:none}
+  .time-slot{flex:none;padding:10px 16px;border-radius:11px;text-align:center;font-weight:600;font-size:13px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#ffffff;cursor:pointer;transition:background .18s,border-color .18s;white-space:nowrap}
+  .time-slot.selected{background:#CE2434;border-color:#CE2434;color:#fff;font-weight:700}
+  .time-slot.taken{background:transparent;border:1px dashed rgba(255,255,255,.14);color:#5b5d62;text-decoration:line-through;cursor:default}
 
   /* CTA bar */
-  .cta-bar{flex:none;display:flex;align-items:center;justify-content:space-between;padding:11px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);border-top:1px solid rgba(255,255,255,.07);background:#0B0C0E}
-  .cta-summary .lbl{font-size:10px;color:#8c8c89}
-  .cta-summary .price{font-weight:800;font-size:17px;color:#F3F0E9}
-  .cta-btn{display:flex;align-items:center;gap:7px;background:#CE2434;color:#fff;font-weight:700;font-size:13.5px;padding:12px 20px;border-radius:13px;cursor:pointer;border:none;font-family:Barlow,sans-serif;opacity:.45;transition:opacity .18s;pointer-events:none}
-  .cta-btn.ready{opacity:1;pointer-events:auto}
+  .cta-bar{flex:none;display:flex;align-items:center;justify-content:space-between;padding:13px 18px 22px;border-top:1px solid rgba(255,255,255,.07);background:#0B0C0E}
+  .cta-summary .label{font-size:10.5px;color:#8c8c89}
+  .cta-summary .price{font-weight:800;font-size:18px;color:#F3F0E9}
+  .cta-btn{display:flex;align-items:center;gap:8px;background:#CE2434;color:#fff;font-weight:700;font-size:14px;padding:13px 22px;border-radius:14px;cursor:pointer;border:none;font-family:Barlow,sans-serif;opacity:.5;transition:opacity .18s}
+  .cta-btn.ready{opacity:1}
 
-  /* ── Screen 2: datos del cliente ── */
-  .s2-scroll{flex:1;overflow-y:auto;padding:14px 18px 0;display:flex;flex-direction:column;gap:12px}
-  .summary-card{background:#16181C;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden}
+  /* ===== CONFIRMATION SCREEN ===== */
+  .confirm-hero{padding:30px 24px 22px;display:flex;flex-direction:column;align-items:center;text-align:center;flex:none}
+  .confirm-icon{width:74px;height:74px;border-radius:50%;background:rgba(206,36,52,.13);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+  .confirm-icon-inner{width:50px;height:50px;border-radius:50%;background:#CE2434;display:flex;align-items:center;justify-content:center}
+  .confirm-hero h2{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:.02em;color:#F3F0E9;line-height:.95;margin:0}
+  .confirm-hero p{font-size:13px;color:#9a9a97;margin:8px 0 0;max-width:250px}
+
+  .summary-card{margin:0 20px;background:#16181C;border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;flex:none}
   .summary-card .stripe{height:4px;background:repeating-linear-gradient(135deg,#CE2434 0 8px,#F3F0E9 8px 16px,#21458F 16px 24px,#F3F0E9 24px 32px)}
-  .summary-card .inner{padding:15px 15px 5px}
-  .svc-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.07)}
-  .svc-row .s-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#F3F0E9;line-height:1}
-  .svc-row .s-desc{font-size:10.5px;color:#8c8c89}
-  .svc-row .s-price{font-weight:800;font-size:17px;color:#F3F0E9;flex:none}
-  .detail-rows{display:flex;flex-direction:column;gap:11px;padding:13px 0}
-  .detail-row{display:flex;align-items:center;gap:10px;font-size:13px;color:#dcdcd8;font-weight:500}
-  .user-inputs{display:flex;flex-direction:column;gap:10px}
-  .user-inputs input{background:#16181C;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:13px 14px;font-size:14px;color:#F3F0E9;font-family:Barlow,sans-serif;outline:none;width:100%;transition:border-color .18s}
-  .user-inputs input:focus{border-color:#CE2434}
-  .user-inputs input::placeholder{color:#6b6e74}
-  .footer-note{display:flex;align-items:center;gap:7px;justify-content:center;padding:14px 18px;font-size:11px;color:#8c8c89}
+  .summary-card .inner{padding:18px 18px 6px}
+  .summary-card .svc-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .summary-card .svc-row .name{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#F3F0E9;line-height:1}
+  .summary-card .svc-row .desc{font-size:11px;color:#8c8c89}
+  .summary-card .svc-row .svc-price{font-weight:800;font-size:18px;color:#F3F0E9}
+  .summary-card .details{display:flex;flex-direction:column;gap:13px;padding:15px 0}
+  .detail-row{display:flex;align-items:center;gap:11px;font-size:13.5px;color:#dcdcd8;font-weight:500}
 
-  /* ── Screen 3: confirmado ── */
-  .s3-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0}
-  .confirm-hero{padding:26px 22px 18px;display:flex;flex-direction:column;align-items:center;text-align:center;flex:none}
-  .confirm-ring{width:72px;height:72px;border-radius:50%;background:rgba(206,36,52,.13);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
-  .confirm-dot{width:48px;height:48px;border-radius:50%;background:#CE2434;display:flex;align-items:center;justify-content:center}
-  .confirm-hero h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.02em;color:#F3F0E9;line-height:.95}
-  .confirm-hero p{font-size:12.5px;color:#9a9a97;margin-top:7px;max-width:240px}
-  .s3-card-wrap{padding:0 18px;flex:none}
-  .actions{padding:16px 18px 0;flex:none}
-  .gcal-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:#F3F0E9;color:#16181C;font-weight:700;font-size:14px;padding:14px;border-radius:13px;cursor:pointer;border:none;font-family:Barlow,sans-serif;width:100%}
-  .sec-btns{display:flex;gap:10px;margin-top:10px}
-  .sec-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#dcdcd8;font-weight:600;font-size:12.5px;padding:12px;border-radius:13px;cursor:pointer;font-family:Barlow,sans-serif}
-  .otra-btn{margin:14px 18px 0;display:block;width:calc(100% - 36px);background:transparent;border:1px solid rgba(255,255,255,.12);color:#8c8c89;font-family:Barlow,sans-serif;font-size:13px;font-weight:600;padding:12px;border-radius:13px;cursor:pointer;text-align:center}
-  .s3-footer{padding:14px 18px calc(env(safe-area-inset-bottom,0px) + 14px);display:flex;align-items:center;gap:7px;justify-content:center;font-size:11px;color:#8c8c89;flex:none}
+  .actions{padding:18px 20px 0;flex:none}
+  .gcal-btn{display:flex;align-items:center;justify-content:center;gap:11px;background:#F3F0E9;color:#16181C;font-weight:700;font-size:14.5px;padding:15px;border-radius:14px;cursor:pointer;border:none;font-family:Barlow,sans-serif;width:100%}
+  .secondary-btns{display:flex;gap:11px;margin-top:11px}
+  .sec-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#16181C;border:1px solid rgba(255,255,255,.09);color:#dcdcd8;font-weight:600;font-size:13px;padding:13px;border-radius:14px;cursor:pointer;border:1px solid rgba(255,255,255,.09);font-family:Barlow,sans-serif}
+
+  .footer-note{margin-top:auto;display:flex;align-items:center;gap:8px;justify-content:center;padding:16px 20px 24px;flex:none}
+  .footer-note span{font-size:11.5px;color:#8c8c89}
+
+  /* User form (step before confirm) */
+  .user-form{padding:14px 20px 0;display:flex;flex-direction:column;gap:12px;flex:none}
+  .user-form input{background:#16181C;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 14px;font-size:14px;color:#F3F0E9;font-family:Barlow,sans-serif;outline:none;width:100%;transition:border-color .18s}
+  .user-form input:focus{border-color:#CE2434}
+  .user-form input::placeholder{color:#6b6e74}
 </style>
 </head>
 <body>
-<div id="app">
+
+<!-- ===== SCREEN 1: BOOKING ===== -->
+<div class="screen active" id="screen-booking">
   <div class="flag-stripe"></div>
 
-  <!-- Brand header (compartido) -->
-  <div class="brand-header" id="brand-header">
+  <!-- Brand -->
+  <div class="brand-header">
     <div class="logo-group">
-      <img id="logo-img" src="/logo.png" alt="" class="logo-img" onerror="this.style.display='none';document.getElementById('logo-fb').style.display='flex'">
-      <div id="logo-fb" class="logo-fallback" style="display:none"></div>
+      <img src="/logo.png" alt="El Garage" class="logo">
       <div>
-        <div class="brand-name" id="brand-name">El Garage</div>
-        <div class="brand-sub">Barber Shop</div>
+        <div class="name">El Garage</div>
+        <div class="subtitle">Barber Shop</div>
       </div>
     </div>
-    <div class="location-chip">
+    <div class="location">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="2.4"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
-      <span id="barrio-chip">Lanús</span>
+      Lanús
     </div>
   </div>
 
-  <!-- ── SCREEN 1: selección ── -->
-  <div class="screen active" id="s1">
-    <div class="hero">
-      <h1>Reservá<br>tu turno</h1>
-      <p>Elegí servicio, día y horario. Confirmación al instante.</p>
-    </div>
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Reservá<br>tu turno</h1>
+    <p>Elegí servicio, día y horario. Te confirma al instante.</p>
+  </div>
 
-    <div class="steps">
-      <div>
-        <div class="step-label">1 · SERVICIO</div>
-        <div class="services-scroll" id="services">
-          <div class="service-card" data-service="Corte" data-price="14000" data-desc="con/sin barba y ceja" onclick="selectService(this)">
-            <div class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
-            <div class="svc-name">Corte</div><div class="svc-desc">con/sin barba y ceja</div>
-            <div class="svc-price">$14.000</div>
-          </div>
-          <div class="service-card" data-service="Promo padre/hijo" data-price="26000" data-desc="2 cortes juntos" onclick="selectService(this)">
-            <div class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
-            <div class="svc-name">Promo padre/hijo</div><div class="svc-desc">2 cortes juntos</div>
-            <div class="svc-price">$26.000</div>
-          </div>
-          <div class="service-card" data-service="Corte niño" data-price="12000" data-desc="hasta 12 años" onclick="selectService(this)">
-            <div class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
-            <div class="svc-name">Corte niño</div><div class="svc-desc">hasta 12 años</div>
-            <div class="svc-price">$12.000</div>
-          </div>
-          <div class="service-card" data-service="Barba" data-price="6000" data-desc="perfilado + toalla" onclick="selectService(this)">
-            <div class="check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
-            <div class="svc-name">Barba</div><div class="svc-desc">perfilado + toalla</div>
-            <div class="svc-price">$6.000</div>
-          </div>
+  <!-- Steps -->
+  <div class="steps">
+    <!-- 1 · Servicio -->
+    <div>
+      <div class="step-label">1 · SERVICIO</div>
+      <div class="services-scroll" id="services">
+        <div class="service-card" data-service="Corte" data-price="14000" data-desc="con/sin barba y ceja" onclick="selectService(this)">
+          <div class="check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          <div class="svc-name">Corte</div>
+          <div class="svc-desc">con/sin barba y ceja</div>
+          <div class="svc-price">$14.000</div>
+        </div>
+        <div class="service-card" data-service="Promo padre/hijo" data-price="26000" data-desc="2 cortes juntos" onclick="selectService(this)">
+          <div class="check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          <div class="svc-name">Promo padre/hijo</div>
+          <div class="svc-desc">2 cortes juntos</div>
+          <div class="svc-price">$26.000</div>
+        </div>
+        <div class="service-card" data-service="Corte niño" data-price="12000" data-desc="hasta 12 años" onclick="selectService(this)">
+          <div class="check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          <div class="svc-name">Corte niño</div>
+          <div class="svc-desc">hasta 12 años</div>
+          <div class="svc-price">$12.000</div>
+        </div>
+        <div class="service-card" data-service="Barba" data-price="6000" data-desc="perfilado + toalla" onclick="selectService(this)">
+          <div class="check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          <div class="svc-name">Barba</div>
+          <div class="svc-desc">perfilado + toalla</div>
+          <div class="svc-price">$6.000</div>
         </div>
       </div>
-
-      <div>
-        <div class="step-label">2 · DÍA</div>
-        <div class="days-scroll" id="days"></div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">
-        <div class="step-label">3 · HORARIO</div>
-        <div class="times-wrap"><div class="times-grid" id="times"><div class="times-empty">Elegí un día primero</div></div></div>
-      </div>
     </div>
 
-    <div class="cta-bar">
-      <div class="cta-summary">
-        <div class="lbl" id="cta-label">Elegí servicio, día y hora</div>
-        <div class="price" id="cta-price"></div>
-      </div>
-      <button class="cta-btn" id="cta-btn" onclick="goToUserForm()">
-        Continuar
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </button>
+    <!-- 2 · Día -->
+    <div>
+      <div class="step-label">2 · DÍA</div>
+      <div class="days-scroll" id="days"></div>
+    </div>
+
+    <!-- 3 · Horario -->
+    <div>
+      <div class="step-label">3 · HORARIO</div>
+      <div class="times-grid" id="times"></div>
     </div>
   </div>
 
-  <!-- ── SCREEN 2: datos del cliente ── -->
-  <div class="screen" id="s2">
-    <div class="s2-scroll">
-      <div style="display:flex;align-items:center;justify-content:space-between">
+  <!-- CTA -->
+  <div class="cta-bar">
+    <div class="cta-summary">
+      <div class="label" id="cta-label">Elegí servicio, día y hora</div>
+      <div class="price" id="cta-price"></div>
+    </div>
+    <button class="cta-btn" id="cta-btn" onclick="goToUserForm()">
+      Continuar
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: USER DATA ===== -->
+<div class="screen" id="screen-user">
+  <div class="flag-stripe"></div>
+  <div class="brand-header">
+    <div class="logo-group">
+      <img src="/logo.png" alt="El Garage" class="logo">
+      <div>
+        <div class="name">El Garage</div>
+        <div class="subtitle">Barber Shop</div>
+      </div>
+    </div>
+    <button onclick="goBack()" style="background:#16181C;border:1px solid rgba(255,255,255,.1);color:#cfcfca;padding:7px 13px;border-radius:10px;font-family:Barlow,sans-serif;font-size:12px;cursor:pointer">← Volver</button>
+  </div>
+
+  <div class="hero" style="margin-bottom:6px">
+    <h1 style="font-size:32px">Tus datos</h1>
+    <p>Para reservar el turno necesitamos tu nombre y teléfono.</p>
+  </div>
+
+  <div class="summary-card" style="margin:14px 20px 0">
+    <div class="stripe"></div>
+    <div class="inner">
+      <div class="svc-row">
         <div>
-          <div style="font-size:10px;color:#8c8c89">Paso 2 de 2</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#F3F0E9;line-height:1">Tus datos</div>
+          <div class="name" id="confirm-service-name"></div>
+          <div class="desc" id="confirm-service-desc"></div>
         </div>
-        <button onclick="showScreen('s1')" style="background:#16181C;border:1px solid rgba(255,255,255,.1);color:#cfcfca;padding:7px 12px;border-radius:10px;font-family:Barlow,sans-serif;font-size:12px;cursor:pointer">← Volver</button>
+        <div class="svc-price" id="confirm-price"></div>
       </div>
-
-      <div class="summary-card">
-        <div class="stripe"></div>
-        <div class="inner">
-          <div class="svc-row">
-            <div>
-              <div class="s-name" id="s2-svc"></div>
-              <div class="s-desc" id="s2-desc"></div>
-            </div>
-            <div class="s-price" id="s2-price"></div>
-          </div>
-          <div class="detail-rows">
-            <div class="detail-row">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.9"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
-              <span id="s2-datetime"></span>
-            </div>
-            <div class="detail-row">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.9"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
-              <span id="s2-addr"></span>
-            </div>
-          </div>
+      <div class="details">
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+          <span id="confirm-datetime"></span>
+        </div>
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+          <span>Hernandarias 951, Lanús</span>
         </div>
       </div>
-
-      <div class="user-inputs">
-        <input type="text" id="inp-name" placeholder="Tu nombre" autocomplete="given-name">
-        <input type="tel" id="inp-phone" placeholder="Tu WhatsApp" autocomplete="tel">
-      </div>
-
-      <button class="cta-btn ready" style="width:100%;justify-content:center;gap:9px" onclick="confirmBooking()">
-        Confirmar turno
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
-      </button>
-    </div>
-    <div class="footer-note">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8c8c89" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-      Llegá 5 min antes · Cupos limitados
     </div>
   </div>
 
-  <!-- ── SCREEN 3: turno confirmado ── -->
-  <div class="screen" id="s3">
-    <div class="s3-scroll">
-      <div class="confirm-hero">
-        <div class="confirm-ring">
-          <div class="confirm-dot">
-            <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
-          </div>
-        </div>
-        <h2>¡Turno confirmado!</h2>
-        <p>Te esperamos, <b id="s3-nombre" style="color:#cfcfca">amigo</b>. Guardá el turno para no olvidarte.</p>
-      </div>
+  <div class="user-form">
+    <input type="text" id="input-name" placeholder="Tu nombre" autocomplete="given-name">
+    <input type="tel" id="input-phone" placeholder="Tu teléfono (WhatsApp)" autocomplete="tel">
+  </div>
 
-      <div class="s3-card-wrap">
-        <div class="summary-card">
-          <div class="stripe"></div>
-          <div class="inner">
-            <div class="svc-row">
-              <div>
-                <div class="s-name" id="s3-svc"></div>
-                <div class="s-desc" id="s3-desc"></div>
-              </div>
-              <div class="s-price" id="s3-price"></div>
-            </div>
-            <div class="detail-rows">
-              <div class="detail-row">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.9"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
-                <span id="s3-datetime"></span>
-              </div>
-              <div class="detail-row">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.9"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
-                <span id="s3-barbero"></span>
-              </div>
-              <div class="detail-row">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.9"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
-                <span id="s3-addr2"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div style="padding:16px 20px 0">
+    <button class="cta-btn ready" style="width:100%;justify-content:center;gap:10px" onclick="confirmBooking()">
+      Confirmar turno
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg>
+    </button>
+  </div>
+  <div class="footer-note">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8c8c89" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+    <span>Llegá 5 min antes · Cupos limitados</span>
+  </div>
+</div>
 
-      <div class="actions">
-        <button class="gcal-btn" onclick="addToCalendar()">
-          <svg width="20" height="20" viewBox="0 0 48 48"><rect x="9" y="9" width="30" height="30" rx="3" fill="#fff"/><path d="M9 14a3 3 0 0 1 3-3h24a3 3 0 0 1 3 3v4H9z" fill="#4285F4"/><path d="M9 14h30v20a3 3 0 0 1-3 3H12a3 3 0 0 1-3-3z" fill="#fff"/><text x="24" y="32" font-family="Barlow,sans-serif" font-size="14" font-weight="700" fill="#4285F4" text-anchor="middle" id="gcal-day">20</text></svg>
-          Agregar a Google Calendar
-        </button>
-        <div class="sec-btns">
-          <button class="sec-btn" onclick="whatsapp()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5 0a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2a.4.4 0 0 0 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11 11 0 0 0 4.3 3.8c1.6.7 1.8.5 2.2.5a2.5 2.5 0 0 0 1.6-1.2 2 2 0 0 0 .2-1.2c-.1-.1-.2-.2-.4-.3z"/></svg>
-            WhatsApp
-          </button>
-          <button class="sec-btn" id="maps-btn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#21458F" stroke-width="2"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
-            Cómo llegar
-          </button>
-        </div>
+<!-- ===== SCREEN 3: CONFIRMED ===== -->
+<div class="screen" id="screen-confirmed">
+  <div class="confirm-hero">
+    <div class="confirm-icon">
+      <div class="confirm-icon-inner">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
       </div>
-
-      <button class="otra-btn" onclick="volverInicio()">← Reservar otro turno</button>
     </div>
-    <div class="s3-footer">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8c8c89" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-      Llegá 5 min antes · Cupos limitados
+    <h2>¡Turno confirmado!</h2>
+    <p>Te esperamos, <b id="confirmed-name" style="color:#cfcfca">amigo</b>. Guardá el turno en tu calendario para no olvidarte.</p>
+  </div>
+
+  <div class="summary-card">
+    <div class="stripe"></div>
+    <div class="inner">
+      <div class="svc-row">
+        <div>
+          <div class="name" id="confirmed-service-name"></div>
+          <div class="desc" id="confirmed-service-desc"></div>
+        </div>
+        <div class="svc-price" id="confirmed-price"></div>
+      </div>
+      <div class="details">
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>
+          <span id="confirmed-datetime"></span>
+        </div>
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
+          <span>Barbero: Erik Fenanti</span>
+        </div>
+        <div class="detail-row">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#CE2434" stroke-width="1.8"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+          <span>Hernandarias 951, Lanús</span>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div class="actions">
+    <button class="gcal-btn" id="gcal-btn" onclick="addToCalendar()">
+      <svg width="20" height="20" viewBox="0 0 48 48"><rect x="9" y="9" width="30" height="30" rx="3" fill="#fff"/><path d="M9 14a3 3 0 0 1 3-3h24a3 3 0 0 1 3 3v4H9z" fill="#4285F4"/><path d="M9 14h30v20a3 3 0 0 1-3 3H12a3 3 0 0 1-3-3z" fill="#fff"/><text x="24" y="32" font-family="Barlow,sans-serif" font-size="14" font-weight="700" fill="#4285F4" text-anchor="middle" id="gcal-day">20</text></svg>
+      Agregar a Google Calendar
+    </button>
+    <div class="secondary-btns">
+      <button class="sec-btn" onclick="whatsapp()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5 0a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2a.4.4 0 0 0 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11 11 0 0 0 4.3 3.8c1.6.7 1.8.5 2.2.5a2.5 2.5 0 0 0 1.6-1.2 2 2 0 0 0 .2-1.2c-.1-.1-.2-.2-.4-.3z"/></svg>
+        WhatsApp
+      </button>
+      <button class="sec-btn" onclick="window.open('https://maps.google.com/?q=Hernandarias+951+Lanus')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#21458F" stroke-width="1.9"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+        Cómo llegar
+      </button>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8c8c89" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+    <span>Llegá 5 min antes · Cupos limitados</span>
+  </div>
+
+  <div style="padding:0 20px 28px;flex:none">
+    <button onclick="volverInicio()" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);color:#8c8c89;font-family:Barlow,sans-serif;font-size:13px;font-weight:600;padding:13px;border-radius:14px;cursor:pointer">
+      ← Reservar otro turno
+    </button>
   </div>
 </div>
 
 <script>
-// ─── Config desde URL params (para demos personalizados) ───
-const P = new URLSearchParams(location.search)
-const CFG = {
-  nombre:   P.get('nombre')   || 'El Garage',
-  barrio:   P.get('barrio')   || 'Lanús',
-  direccion:P.get('direccion')|| 'Hernandarias 951, Lanús',
-  barbero:  P.get('barbero')  || 'El barbero',
-  logo:     P.get('logo')     || '/logo.png',
-  wa:       P.get('wa')       || '5491170594769',
-}
+// ─── State ───
+const state = {service:null, day:null, time:null};
+let perfilCache = {};
 
-// Aplicar branding
-document.title = CFG.nombre + ' — Reservar turno'
-document.getElementById('brand-name').textContent = CFG.nombre
-document.getElementById('barrio-chip').textContent = CFG.barrio
-document.getElementById('s2-addr').textContent = CFG.direccion
-document.getElementById('s3-addr2').textContent = CFG.direccion
-document.getElementById('s3-barbero').textContent = 'Barbero: ' + CFG.barbero
-
-// Logo: si viene por param es una URL, si no usa la del servidor
-const logoImg = document.getElementById('logo-img')
-const logoFb  = document.getElementById('logo-fb')
-logoImg.src = CFG.logo
-logoImg.alt = CFG.nombre
-logoFb.textContent = CFG.nombre.charAt(0).toUpperCase()
-
-// Maps button
-document.getElementById('maps-btn').onclick = () =>
-  window.open('https://maps.google.com/?q=' + encodeURIComponent(CFG.direccion), '_blank')
-
-// ─── Estado ───
-const state = { service:null, desc:'', price:0, day:null, date:null, time:null, calUrl:'', name:'', phone:'' }
-let perfilCache = {}
-
-// ─── API ───
+// ─── API helpers ───
 function fechaLocal(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` }
-async function apiGet(k){ try{ const r=await fetch(`/api/datos/${encodeURIComponent(k)}`); return r.ok?r.json():null }catch{return null} }
-async function apiPut(k,v){ await fetch(`/api/datos/${encodeURIComponent(k)}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(v)}) }
+async function apiGet(clave){ try{ const r=await fetch(`/api/datos/${encodeURIComponent(clave)}`); return r.ok?r.json():null }catch{return null} }
+async function apiPut(clave,val){ await fetch(`/api/datos/${encodeURIComponent(clave)}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(val)}) }
 
-// ─── Init ───
+// ─── Inicializar: cargar perfil ───
 async function init(){
-  const p = await apiGet('perfil')
-  if(p) perfilCache = p
-  actualizarPrecios()
-  buildDays()
+  const p = await apiGet('perfil');
+  if(p) perfilCache = p;
+  actualizarPrecios();
+  buildDays();
+  buildTimes();
 }
-init()
+init();
 
-// ─── Precios desde perfil ───
+// ─── Actualizar precios en las cards desde el perfil ───
 function actualizarPrecios(){
-  const pr = perfilCache.precios || {}
-  const num = v => parseInt(String(v||'').replace(/\./g,'')) || 0
-  const fmt = n => n ? `$${Number(n).toLocaleString('es-AR')}` : null
-  const MAP = { Corte: pr.corte||14000, 'Promo padre/hijo': pr.promo||26000, 'Corte niño': pr.nino||12000, Barba: pr.barba||6000 }
-  document.querySelectorAll('.service-card').forEach(c => {
-    const svc = c.dataset.service
-    const n = num(MAP[svc])
-    c.dataset.price = n
-    const f = fmt(n)
-    if(f) c.querySelector('.svc-price').textContent = f
-  })
+  const pr = (perfilCache.precios)||{};
+  const fmt = v => v ? `$${Number(String(v).replace(/\./g,'')).toLocaleString('es-AR')}` : null;
+  const MAP = { 'Corte': pr.corte, 'Promo padre/hijo': pr.promo, 'Corte niño': pr.nino, 'Barba': pr.barba };
+  const MAP_NUM = { 'Corte': pr.corte||14000, 'Promo padre/hijo': pr.promo||26000, 'Corte niño': pr.nino||12000, 'Barba': pr.barba||6000 };
+  document.querySelectorAll('.service-card').forEach(card => {
+    const svc = card.dataset.service;
+    const rawNum = String(MAP_NUM[svc]||'').replace(/\./g,'');
+    const num = parseInt(rawNum)||0;
+    card.dataset.price = num;
+    const priceEl = card.querySelector('.svc-price');
+    const fmtVal = fmt(MAP[svc]);
+    if(priceEl && fmtVal) priceEl.textContent = fmtVal;
+  });
 }
 
-// ─── Días (próximos 14, sin domingos) ───
+// ─── Generate days (next 7 days, skip Sunday) ───
 function buildDays(){
-  const cont = document.getElementById('days')
-  const names = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
-  const now = new Date()
-  let built=0, off=0
-  while(built < 14){
-    const d = new Date(now); d.setDate(now.getDate()+off++)
-    const dow = d.getDay()
-    const pill = document.createElement('div')
-    pill.className = 'day-pill' + (dow===0?' closed':'')
-    pill.dataset.date = fechaLocal(d)
-    pill.dataset.label = `${names[dow]} ${d.getDate()}`
-    pill.innerHTML = `<div class="day-name">${names[dow]}</div><div class="day-num">${d.getDate()}</div>`
-    if(dow!==0) pill.onclick = () => selectDay(pill)
-    cont.appendChild(pill)
-    built++
+  const cont=document.getElementById('days');
+  const names=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const now=new Date();
+  let built=0,offset=0;
+  while(built<7){
+    const d=new Date(now);d.setDate(now.getDate()+offset++);
+    const dow=d.getDay();
+    const isSun=dow===0;
+    const pill=document.createElement('div');
+    pill.className='day-pill'+(isSun?' closed':'');
+    pill.dataset.date=fechaLocal(d);
+    pill.dataset.label=`${names[dow]} ${d.getDate()}`;
+    pill.innerHTML=`<div class="day-name">${names[dow]}</div><div class="day-num">${d.getDate()}</div>`;
+    if(!isSun) pill.onclick=()=>selectDay(pill);
+    cont.appendChild(pill);
+    built++;
   }
 }
 
-// ─── Horarios ───
+// ─── Generate times ───
 async function buildTimes(){
-  const cont = document.getElementById('times')
-  cont.innerHTML = '<div class="times-empty" style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;border:2px solid #CE2434;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite"></div>Cargando...</div>'
+  const cont=document.getElementById('times');
+  cont.innerHTML='<div style="color:#6b6e74;font-size:12px;padding:8px 0;text-align:center;grid-column:1/-1">Cargando...</div>';
 
-  const p = perfilCache
-  const dow = (([y,m,d])=>new Date(+y,+m-1,+d))(state.date.split('-')).getDay()
-  const esSab = dow === 6
-  const horario = (esSab ? p.horarioSabado||p.horarioSemana : p.horarioSemana) || (esSab?'9:00 – 19:00':'10:00 – 20:00')
-  const parts = horario.split(/[–\-]/).map(s=>s.trim())
-  const desdeH = parseInt(parts[0]) || (esSab?9:10)
-  const hastaH = parseInt(parts[1]) || (esSab?19:20)
-  const intervalo = parseInt(p.intervalo)||20
+  const p = perfilCache;
+  const esSabado = state.date ? (([y,m,d])=>new Date(+y,+m-1,+d))(state.date.split('-')).getDay()===6 : false;
+  const horarioDefault = esSabado ? '9:00 – 19:00' : '10:00 – 20:00';
+  const horario = (esSabado ? (p.horarioSabado||p.horarioSemana) : p.horarioSemana) || horarioDefault;
+  const parts = horario.split(/[–\-]/).map(s=>s.trim());
+  let desdeH=parseInt(parts[0])||( esSabado?9:10 );
+  let hastaH=parseInt(parts[1])||( esSabado?19:20 );
+  let intervalo=parseInt(p.intervalo)||20;
 
-  const ocupados = await apiGet(`turnos_${state.date}`) || {}
-
-  const slots = []
-  let h=desdeH, m=0
-  while(h<hastaH){ slots.push(`${h}:${m.toString().padStart(2,'0')}`); m+=intervalo; while(m>=60){m-=60;h++} }
-
-  const ahoraAR = new Date(new Date().toLocaleString('en-US',{timeZone:'America/Argentina/Buenos_Aires'}))
-  const esHoy = state.date === fechaLocal(new Date())
-  const filtrados = esHoy
-    ? slots.filter(t=>{ const [sh,sm]=t.split(':').map(Number); return sh*60+sm > ahoraAR.getHours()*60+ahoraAR.getMinutes() })
-    : slots
-
-  cont.innerHTML = ''
-  if(!filtrados.length){
-    cont.innerHTML = '<div class="times-empty">Sin horarios disponibles</div>'
-    return
+  let ocupados={};
+  if(state.date){
+    const data = await apiGet(`turnos_${state.date}`);
+    if(data) ocupados=data;
   }
-  filtrados.forEach(t => {
-    const el = document.createElement('div')
-    const taken = !!(ocupados[t]?.nombre)
-    el.className = 'time-slot' + (taken?' taken':'')
-    el.textContent = t
-    if(!taken) el.onclick = () => selectTime(el,t)
-    cont.appendChild(el)
-  })
+
+  cont.innerHTML='';
+  const slots=[];
+  let h=desdeH, m=0;
+  while(h<hastaH){ slots.push(`${h}:${m.toString().padStart(2,'0')}`); m+=intervalo; while(m>=60){m-=60;h++;} }
+
+  // Filtrar horarios pasados (solo para el día de hoy, zona Argentina UTC-3)
+  const ahoraAR = new Date(new Date().toLocaleString('en-US', {timeZone:'America/Argentina/Buenos_Aires'}));
+  const esHoy = state.date === fechaLocal(new Date());
+  const slotsFiltrados = esHoy
+    ? slots.filter(t => { const [sh,sm]=t.split(':').map(Number); return sh*60+sm > ahoraAR.getHours()*60+ahoraAR.getMinutes() })
+    : slots;
+
+  slotsFiltrados.forEach(t=>{
+    const el=document.createElement('div');
+    const taken=!!(ocupados[t]&&ocupados[t].nombre);
+    el.className='time-slot'+(taken?' taken':'');
+    el.textContent=t;
+    if(!taken) el.onclick=()=>selectTime(el,t);
+    cont.appendChild(el);
+  });
 }
 
-// ─── Selecciones ───
+// ─── Selections ───
 function selectService(el){
-  el.classList.toggle('selected')
-  const sels = [...document.querySelectorAll('.service-card.selected')]
-  if(!sels.length){ state.service=null; state.price=0; state.desc='' }
-  else {
-    state.service = sels.map(c=>c.dataset.service).join(' + ')
-    state.price   = sels.reduce((a,c)=>a+parseInt(c.dataset.price),0)
-    state.desc    = sels.map(c=>c.dataset.desc).join(', ')
+  el.classList.toggle('selected');
+  // Recalcular servicios, precio y desc desde todas las cards seleccionadas
+  const sels=[...document.querySelectorAll('.service-card.selected')];
+  if(sels.length===0){
+    state.service=null; state.price=0; state.desc='';
+  } else {
+    state.service=sels.map(c=>c.dataset.service).join(' + ');
+    state.price=sels.reduce((a,c)=>a+parseInt(c.dataset.price),0);
+    state.desc=sels.map(c=>c.dataset.desc).join(', ');
   }
-  updateCTA()
+  updateCTA();
 }
-
 function selectDay(el){
-  document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('selected'))
-  el.classList.add('selected')
-  state.day  = el.dataset.label
-  state.date = el.dataset.date
-  state.time = null
-  buildTimes()
-  updateCTA()
+  document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  state.day=el.dataset.label;
+  state.date=el.dataset.date;
+  state.time=null;
+  buildTimes();
+  updateCTA();
 }
-
 function selectTime(el,t){
-  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'))
-  el.classList.add('selected')
-  state.time = t
-  updateCTA()
+  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+  state.time=t;
+  updateCTA();
 }
 
-// ─── Navegación ───
 function goToUserForm(){
-  if(!state.service||!state.day||!state.time||!state.price) return
-  document.getElementById('s2-svc').textContent = state.service
-  document.getElementById('s2-desc').textContent = state.desc
-  document.getElementById('s2-price').textContent = `$${state.price.toLocaleString('es-AR')}`
-  document.getElementById('s2-datetime').textContent = `${state.day} · ${state.time} hs`
-  showScreen('s2')
+  if(!state.service||!state.day||!state.time||!state.price) return;
+  document.getElementById('confirm-service-name').textContent=state.service;
+  document.getElementById('confirm-service-desc').textContent=state.desc;
+  document.getElementById('confirm-price').textContent=`$${state.price.toLocaleString('es-AR')}`;
+  document.getElementById('confirm-datetime').textContent=`${state.day} · ${state.time} hs`;
+  showScreen('screen-user');
 }
+
+function goBack(){showScreen('screen-booking');}
 
 async function confirmBooking(){
-  const name  = document.getElementById('inp-name').value.trim()
-  const phone = document.getElementById('inp-phone').value.trim()
-  if(!name){ document.getElementById('inp-name').focus(); return }
-  if(!phone){ document.getElementById('inp-phone').focus(); return }
+  const name=document.getElementById('input-name').value.trim();
+  const phone=document.getElementById('input-phone').value.trim();
+  if(!name){document.getElementById('input-name').focus();return;}
+  if(!phone){document.getElementById('input-phone').focus();return;}
 
-  const btn = document.querySelector('#s2 .cta-btn')
-  if(btn){ btn.textContent='Guardando...'; btn.style.opacity='.6'; btn.onclick=null }
+  // Deshabilitar botón mientras guarda
+  const btn=document.querySelector('#screen-user .cta-btn');
+  if(btn){btn.textContent='Guardando...';btn.style.opacity='.6';btn.onclick=null;}
 
-  const clave = `turnos_${state.date}`
-  const existing = await apiGet(clave) || {}
-  existing[state.time] = { nombre:name, servicio:state.service, precio:state.price, estado:'pendiente', tipo:'nuevo' }
-  await apiPut(clave, existing)
+  // Guardar en la API → sincroniza con el panel del dueño en tiempo real
+  const clave=`turnos_${state.date}`;
+  const existing=(await apiGet(clave))||{};
+  existing[state.time]={nombre:name,servicio:state.service,precio:state.price,estado:'pendiente',tipo:'nuevo'};
+  await apiPut(clave,existing);
 
-  document.getElementById('s3-nombre').textContent = name.split(' ')[0]
-  document.getElementById('s3-svc').textContent    = state.service
-  document.getElementById('s3-desc').textContent   = state.desc
-  document.getElementById('s3-price').textContent  = `$${state.price.toLocaleString('es-AR')}`
-  document.getElementById('s3-datetime').textContent = `${state.day} · ${state.time} hs`
-  document.getElementById('gcal-day').textContent  = state.day?.split(' ').pop() || ''
+  document.getElementById('confirmed-name').textContent=name.split(' ')[0];
+  document.getElementById('confirmed-service-name').textContent=state.service;
+  document.getElementById('confirmed-service-desc').textContent=state.desc;
+  document.getElementById('confirmed-price').textContent=`$${state.price.toLocaleString('es-AR')}`;
+  document.getElementById('confirmed-datetime').textContent=`${state.day} · ${state.time} hs`;
+  document.getElementById('gcal-day').textContent=state.day?state.day.split(' ').pop():'';
 
-  const d   = new Date(`${state.date}T${state.time}:00`)
-  const end = new Date(d.getTime() + 30*60000)
-  const fmt = dt => dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z'
-  state.calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Turno+${encodeURIComponent(CFG.nombre)}+-+${encodeURIComponent(state.service)}&dates=${fmt(d)}/${fmt(end)}&location=${encodeURIComponent(CFG.direccion)}`
-  state.name  = name
-  state.phone = phone
+  const d=new Date(`${state.date}T${state.time}:00`);
+  const end=new Date(d.getTime()+30*60000);
+  const fmt=dt=>dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  state.calUrl=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=Turno+El+Garage+-+${encodeURIComponent(state.service)}&dates=${fmt(d)}/${fmt(end)}&details=Barbero:+Erik+Fenanti&location=Hernandarias+951,+Lanús`;
+  state.name=name; state.phone=phone;
 
-  showScreen('s3')
+  showScreen('screen-confirmed');
 }
 
-function addToCalendar(){ window.open(state.calUrl,'_blank') }
+function addToCalendar(){window.open(state.calUrl,'_blank');}
 
 function whatsapp(){
-  const msg = `Hola! Acabo de reservar un turno en ${CFG.nombre}:\n*${state.service}* · ${state.day} · ${state.time} hs`
-  window.open(`https://wa.me/${CFG.wa}?text=${encodeURIComponent(msg)}`, '_blank')
+  const msg=`Hola! Acabo de reservar un turno en El Garage:\n*${state.service}* · ${state.day} · ${state.time} hs`;
+  window.open(`https://wa.me/5491170594769?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))
-  document.getElementById(id).classList.add('active')
-  window.scrollTo(0,0)
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
 }
 
 function volverInicio(){
-  Object.assign(state,{service:null,desc:'',price:0,day:null,date:null,time:null})
-  document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'))
-  document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('selected'))
-  document.getElementById('times').innerHTML = '<div class="times-empty">Elegí un día primero</div>'
-  document.getElementById('inp-name').value = ''
-  document.getElementById('inp-phone').value = ''
-  // Restaurar botón confirmar
-  const btn = document.querySelector('#s2 .cta-btn')
-  if(btn){ btn.textContent='Confirmar turno'; btn.style.opacity='1'; btn.onclick=confirmBooking }
-  updateCTA()
-  showScreen('s1')
+  // Resetear estado
+  Object.assign(state,{service:null,day:null,time:null,price:0,desc:null,date:null});
+  // Limpiar selecciones visuales
+  document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.day-pill').forEach(p=>p.classList.remove('selected'));
+  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
+  // Limpiar formulario
+  document.getElementById('input-name').value='';
+  document.getElementById('input-phone').value='';
+  updateCTA();
+  showScreen('screen-booking');
 }
 
 function updateCTA(){
-  const ready = state.service && state.day && state.time && state.price
-  const btn = document.getElementById('cta-btn')
-  btn.classList.toggle('ready', !!ready)
+  const ready=state.service&&state.day&&state.time&&state.price;
+  const btn=document.getElementById('cta-btn');
+  btn.classList.toggle('ready',!!ready);
   if(ready){
-    document.getElementById('cta-label').textContent = `${state.day}, ${state.time}`
-    document.getElementById('cta-price').textContent = `$${state.price.toLocaleString('es-AR')}`
-  } else {
-    document.getElementById('cta-label').textContent = 'Elegí servicio, día y hora'
-    document.getElementById('cta-price').textContent = ''
+    document.getElementById('cta-label').textContent=`${state.day}, ${state.time}`;
+    document.getElementById('cta-price').textContent=`$${state.price.toLocaleString('es-AR')}`;
+  }else{
+    document.getElementById('cta-label').textContent='Elegí servicio, día y hora';
+    document.getElementById('cta-price').textContent='';
   }
 }
-
-// CSS para el spinner de loading
-const style = document.createElement('style')
-style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}'
-document.head.appendChild(style)
 </script>
 </body>
 </html>
